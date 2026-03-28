@@ -1,0 +1,951 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>QRnet.io — Identidad Digital para Objetos Físicos</title>
+<meta name="description" content="Conecta cualquier objeto físico al mundo digital mediante un código QR. Gestión de incidencias, identificación de propietario, antirrobo y más.">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+/* ── RESET & TOKENS ─────────────────────────────────────────────────────── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --black:#020608;
+  --deep:#080f12;
+  --surface:#0d1a20;
+  --card:#111e25;
+  --border:rgba(0,200,255,.1);
+  --cyan:#00c8ff;
+  --cyan2:#00e5c0;
+  --white:#f0f8ff;
+  --muted:#6a8a95;
+  --text:#c8dde5;
+  --accent:#ff6b35;
+  --r:16px;
+}
+html{scroll-behavior:smooth}
+body{
+  font-family:'DM Sans',sans-serif;
+  background:var(--black);
+  color:var(--text);
+  overflow-x:hidden;
+  line-height:1.6;
+}
+::selection{background:var(--cyan);color:#000}
+
+/* ── SCROLLBAR ──────────────────────────────────────────────────────────── */
+::-webkit-scrollbar{width:4px}
+::-webkit-scrollbar-track{background:var(--deep)}
+::-webkit-scrollbar-thumb{background:var(--cyan);border-radius:2px}
+
+/* ── GRID BACKGROUND ────────────────────────────────────────────────────── */
+.grid-bg{
+  position:fixed;inset:0;z-index:0;pointer-events:none;
+  background-image:
+    linear-gradient(rgba(0,200,255,.03) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(0,200,255,.03) 1px,transparent 1px);
+  background-size:60px 60px;
+}
+
+/* ── NAV ────────────────────────────────────────────────────────────────── */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:18px 40px;
+  background:rgba(2,6,8,.7);
+  backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--border);
+  transition:.3s;
+}
+.nav-logo{
+  font-family:'Syne',sans-serif;font-size:22px;font-weight:800;
+  color:var(--white);text-decoration:none;letter-spacing:-.02em;
+  display:flex;align-items:center;gap:8px;
+}
+.nav-logo .dot{
+  width:8px;height:8px;border-radius:50%;
+  background:var(--cyan);
+  box-shadow:0 0 12px var(--cyan);
+  animation:blink 2s infinite;
+}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+.nav-links{display:flex;gap:32px;list-style:none}
+.nav-links a{
+  font-size:14px;font-weight:500;color:var(--muted);
+  text-decoration:none;transition:.2s;letter-spacing:.03em;
+}
+.nav-links a:hover{color:var(--cyan)}
+.nav-cta{
+  background:var(--cyan);color:#000;
+  padding:9px 22px;border-radius:40px;
+  font-size:13px;font-weight:700;text-decoration:none;
+  transition:.2s;letter-spacing:.03em;
+  font-family:'Syne',sans-serif;
+}
+.nav-cta:hover{background:var(--cyan2);transform:translateY(-1px)}
+
+/* ── HERO ───────────────────────────────────────────────────────────────── */
+.hero{
+  position:relative;min-height:100vh;
+  display:flex;align-items:center;justify-content:center;
+  padding:120px 40px 80px;overflow:hidden;
+}
+.hero-glow{
+  position:absolute;
+  width:600px;height:600px;border-radius:50%;
+  background:radial-gradient(circle,rgba(0,200,255,.12) 0%,transparent 70%);
+  top:50%;left:50%;transform:translate(-50%,-50%);
+  pointer-events:none;
+}
+.hero-glow2{
+  position:absolute;
+  width:400px;height:400px;border-radius:50%;
+  background:radial-gradient(circle,rgba(0,229,192,.08) 0%,transparent 70%);
+  top:30%;right:10%;pointer-events:none;
+}
+
+/* QR DECORATIVO */
+.qr-deco{
+  position:absolute;right:8%;top:50%;transform:translateY(-50%);
+  opacity:.12;pointer-events:none;
+  animation:float 6s ease-in-out infinite;
+}
+@keyframes float{0%,100%{transform:translateY(-50%)}50%{transform:translateY(calc(-50% - 20px))}}
+
+.hero-inner{
+  max-width:760px;text-align:center;position:relative;z-index:1;
+}
+.hero-chip{
+  display:inline-flex;align-items:center;gap:8px;
+  background:rgba(0,200,255,.08);border:1px solid rgba(0,200,255,.2);
+  border-radius:40px;padding:6px 16px;
+  font-size:12px;font-weight:600;color:var(--cyan);
+  letter-spacing:.1em;text-transform:uppercase;
+  margin-bottom:32px;
+  animation:fadeUp .8s ease both;
+}
+.hero-chip .chip-dot{
+  width:6px;height:6px;border-radius:50%;
+  background:var(--cyan);box-shadow:0 0 8px var(--cyan);
+}
+
+.hero-title{
+  font-family:'Syne',sans-serif;
+  font-size:clamp(48px,7vw,88px);
+  font-weight:800;line-height:1.0;
+  letter-spacing:-.04em;
+  color:var(--white);
+  margin-bottom:24px;
+  animation:fadeUp .8s .1s ease both;
+}
+.hero-title .accent{
+  background:linear-gradient(135deg,var(--cyan),var(--cyan2));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  background-clip:text;
+}
+.hero-title .line2{
+  display:block;
+  font-size:clamp(32px,5vw,60px);
+  color:var(--muted);font-weight:600;
+  margin-top:8px;
+}
+
+.hero-sub{
+  font-size:18px;color:var(--muted);
+  max-width:540px;margin:0 auto 48px;
+  line-height:1.7;font-weight:300;
+  animation:fadeUp .8s .2s ease both;
+}
+
+.hero-actions{
+  display:flex;gap:16px;justify-content:center;flex-wrap:wrap;
+  animation:fadeUp .8s .3s ease both;
+}
+.btn-primary{
+  background:linear-gradient(135deg,var(--cyan),var(--cyan2));
+  color:#000;padding:14px 32px;border-radius:40px;
+  font-family:'Syne',sans-serif;font-size:14px;font-weight:700;
+  text-decoration:none;letter-spacing:.04em;
+  transition:.2s;box-shadow:0 0 30px rgba(0,200,255,.3);
+}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 0 50px rgba(0,200,255,.5)}
+.btn-outline{
+  border:1px solid var(--border);color:var(--text);
+  padding:14px 32px;border-radius:40px;
+  font-family:'Syne',sans-serif;font-size:14px;font-weight:600;
+  text-decoration:none;letter-spacing:.04em;
+  transition:.2s;background:rgba(255,255,255,.02);
+}
+.btn-outline:hover{border-color:var(--cyan);color:var(--cyan)}
+
+.hero-stats{
+  display:flex;justify-content:center;gap:48px;
+  margin-top:64px;padding-top:48px;
+  border-top:1px solid var(--border);
+  animation:fadeUp .8s .4s ease both;
+  flex-wrap:wrap;
+}
+.stat-item{text-align:center}
+.stat-num{
+  font-family:'Syne',sans-serif;font-size:36px;font-weight:800;
+  color:var(--white);letter-spacing:-.03em;
+  background:linear-gradient(135deg,var(--white),var(--cyan));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+.stat-label{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-top:4px}
+
+@keyframes fadeUp{
+  from{opacity:0;transform:translateY(30px)}
+  to{opacity:1;transform:translateY(0)}
+}
+
+/* ── SECTION SHARED ─────────────────────────────────────────────────────── */
+section{position:relative;z-index:1;padding:100px 40px}
+.section-label{
+  display:inline-flex;align-items:center;gap:8px;
+  font-size:11px;font-weight:700;color:var(--cyan);
+  text-transform:uppercase;letter-spacing:.15em;
+  margin-bottom:20px;
+}
+.section-label::before{
+  content:'';width:24px;height:1px;background:var(--cyan);
+}
+h2.section-title{
+  font-family:'Syne',sans-serif;font-size:clamp(32px,4vw,52px);
+  font-weight:800;color:var(--white);letter-spacing:-.03em;
+  line-height:1.1;margin-bottom:20px;
+}
+.section-sub{
+  font-size:17px;color:var(--muted);max-width:560px;
+  line-height:1.7;font-weight:300;
+}
+.container{max-width:1100px;margin:0 auto}
+
+/* ── HOW IT WORKS ───────────────────────────────────────────────────────── */
+.how{background:var(--deep)}
+.steps{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+  gap:2px;margin-top:60px;
+  border:1px solid var(--border);border-radius:var(--r);overflow:hidden;
+}
+.step{
+  background:var(--card);padding:36px 28px;
+  position:relative;transition:.3s;cursor:default;
+}
+.step:hover{background:var(--surface)}
+.step-num{
+  font-family:'Syne',sans-serif;font-size:64px;font-weight:800;
+  color:rgba(0,200,255,.07);position:absolute;top:16px;right:20px;
+  line-height:1;letter-spacing:-.04em;
+  transition:.3s;
+}
+.step:hover .step-num{color:rgba(0,200,255,.14)}
+.step-icon{
+  width:48px;height:48px;border-radius:12px;
+  background:rgba(0,200,255,.08);border:1px solid rgba(0,200,255,.15);
+  display:flex;align-items:center;justify-content:center;
+  font-size:22px;margin-bottom:20px;
+}
+.step h3{
+  font-family:'Syne',sans-serif;font-size:17px;font-weight:700;
+  color:var(--white);margin-bottom:10px;
+}
+.step p{font-size:13px;color:var(--muted);line-height:1.7}
+
+/* ── USE CASES ──────────────────────────────────────────────────────────── */
+.cases-grid{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));
+  gap:16px;margin-top:60px;
+}
+.case-card{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:var(--r);padding:32px;
+  position:relative;overflow:hidden;
+  transition:.3s;group:hover;
+}
+.case-card::before{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(135deg,rgba(0,200,255,.05),transparent);
+  opacity:0;transition:.3s;
+}
+.case-card:hover{border-color:rgba(0,200,255,.3);transform:translateY(-4px)}
+.case-card:hover::before{opacity:1}
+.case-emoji{font-size:36px;margin-bottom:16px;display:block}
+.case-tag{
+  font-size:10px;font-weight:700;color:var(--cyan);
+  text-transform:uppercase;letter-spacing:.12em;
+  margin-bottom:8px;
+}
+.case-card h3{
+  font-family:'Syne',sans-serif;font-size:20px;font-weight:700;
+  color:var(--white);margin-bottom:12px;
+}
+.case-card p{font-size:13px;color:var(--muted);line-height:1.7;margin-bottom:16px}
+.case-features{list-style:none;display:flex;flex-direction:column;gap:6px}
+.case-features li{
+  font-size:12px;color:var(--text);
+  display:flex;align-items:center;gap:8px;
+}
+.case-features li::before{
+  content:'✓';color:var(--cyan);font-weight:700;font-size:11px;flex-shrink:0;
+}
+.case-card.featured{
+  border-color:rgba(0,200,255,.3);
+  background:linear-gradient(135deg,rgba(0,200,255,.06),var(--card));
+}
+.case-badge{
+  position:absolute;top:16px;right:16px;
+  background:var(--cyan);color:#000;
+  font-size:9px;font-weight:800;
+  padding:3px 10px;border-radius:20px;
+  letter-spacing:.1em;text-transform:uppercase;
+  font-family:'Syne',sans-serif;
+}
+
+/* ── FEATURES ───────────────────────────────────────────────────────────── */
+.features{background:var(--deep)}
+.features-grid{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+  gap:16px;margin-top:60px;
+}
+.feat{
+  padding:28px;border:1px solid var(--border);border-radius:var(--r);
+  background:var(--card);transition:.3s;
+}
+.feat:hover{border-color:rgba(0,200,255,.25);background:var(--surface)}
+.feat-icon{font-size:28px;margin-bottom:16px}
+.feat h4{
+  font-family:'Syne',sans-serif;font-size:15px;font-weight:700;
+  color:var(--white);margin-bottom:8px;
+}
+.feat p{font-size:13px;color:var(--muted);line-height:1.6}
+
+/* ── QR VISUAL ──────────────────────────────────────────────────────────── */
+.qr-section{
+  display:grid;grid-template-columns:1fr 1fr;gap:80px;
+  align-items:center;
+}
+.qr-visual{
+  position:relative;display:flex;align-items:center;justify-content:center;
+}
+.qr-ring{
+  width:280px;height:280px;border-radius:50%;
+  border:1px solid rgba(0,200,255,.15);
+  position:absolute;animation:spin 20s linear infinite;
+}
+.qr-ring2{
+  width:360px;height:360px;border-radius:50%;
+  border:1px solid rgba(0,200,255,.06);
+  position:absolute;animation:spin 30s linear infinite reverse;
+}
+.qr-ring::after,.qr-ring2::after{
+  content:'';position:absolute;width:8px;height:8px;
+  background:var(--cyan);border-radius:50%;
+  top:-4px;left:50%;transform:translateX(-50%);
+  box-shadow:0 0 12px var(--cyan);
+}
+@keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+.qr-box{
+  width:200px;height:200px;
+  background:var(--card);border:1px solid var(--border);
+  border-radius:20px;position:relative;z-index:1;
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 0 60px rgba(0,200,255,.1);
+  overflow:hidden;
+}
+.qr-box::before{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(135deg,rgba(0,200,255,.05),transparent);
+}
+.qr-inner{
+  display:grid;grid-template-columns:repeat(7,1fr);
+  gap:4px;padding:20px;position:relative;z-index:1;
+}
+.qr-cell{
+  width:14px;height:14px;border-radius:2px;
+  background:rgba(0,200,255,.6);
+}
+.qr-cell.off{background:transparent}
+.qr-cell.corner{background:var(--cyan);border-radius:3px}
+
+/* ── PRICING ────────────────────────────────────────────────────────────── */
+.plans{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+  gap:16px;margin-top:60px;max-width:900px;margin-left:auto;margin-right:auto;
+}
+.plan{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:var(--r);padding:36px;transition:.3s;
+}
+.plan:hover{border-color:rgba(0,200,255,.25)}
+.plan.pro{
+  border-color:rgba(0,200,255,.4);
+  background:linear-gradient(135deg,rgba(0,200,255,.07),var(--card));
+  position:relative;
+}
+.plan-badge{
+  position:absolute;top:-12px;left:50%;transform:translateX(-50%);
+  background:linear-gradient(135deg,var(--cyan),var(--cyan2));
+  color:#000;font-size:10px;font-weight:800;
+  padding:4px 16px;border-radius:20px;
+  font-family:'Syne',sans-serif;letter-spacing:.1em;text-transform:uppercase;
+  white-space:nowrap;
+}
+.plan-name{
+  font-family:'Syne',sans-serif;font-size:13px;font-weight:700;
+  color:var(--muted);text-transform:uppercase;letter-spacing:.1em;
+  margin-bottom:12px;
+}
+.plan-price{
+  font-family:'Syne',sans-serif;font-size:48px;font-weight:800;
+  color:var(--white);letter-spacing:-.04em;line-height:1;
+  margin-bottom:4px;
+}
+.plan-price span{font-size:20px;font-weight:400;color:var(--muted)}
+.plan-period{font-size:13px;color:var(--muted);margin-bottom:28px}
+.plan-features{list-style:none;display:flex;flex-direction:column;gap:10px;margin-bottom:32px}
+.plan-features li{
+  font-size:13px;color:var(--text);
+  display:flex;align-items:center;gap:10px;
+}
+.plan-features li .check{color:var(--cyan);font-weight:700;font-size:12px}
+.plan-features li .cross{color:var(--muted);font-size:16px;line-height:1}
+.plan-btn{
+  display:block;text-align:center;padding:13px 24px;border-radius:40px;
+  font-family:'Syne',sans-serif;font-size:13px;font-weight:700;
+  text-decoration:none;letter-spacing:.04em;transition:.2s;
+}
+.plan-btn.free{
+  border:1px solid var(--border);color:var(--text);
+}
+.plan-btn.free:hover{border-color:var(--cyan);color:var(--cyan)}
+.plan-btn.paid{
+  background:linear-gradient(135deg,var(--cyan),var(--cyan2));
+  color:#000;box-shadow:0 0 24px rgba(0,200,255,.25);
+}
+.plan-btn.paid:hover{transform:translateY(-2px);box-shadow:0 0 40px rgba(0,200,255,.4)}
+
+/* ── CTA ────────────────────────────────────────────────────────────────── */
+.cta-section{
+  text-align:center;padding:120px 40px;
+  position:relative;overflow:hidden;
+}
+.cta-bg{
+  position:absolute;inset:0;
+  background:
+    radial-gradient(ellipse at 30% 50%,rgba(0,200,255,.08) 0%,transparent 60%),
+    radial-gradient(ellipse at 70% 50%,rgba(0,229,192,.06) 0%,transparent 60%);
+  pointer-events:none;
+}
+.cta-section h2{
+  font-family:'Syne',sans-serif;font-size:clamp(36px,5vw,64px);
+  font-weight:800;color:var(--white);letter-spacing:-.04em;
+  line-height:1.1;margin-bottom:20px;position:relative;z-index:1;
+}
+.cta-section p{
+  font-size:18px;color:var(--muted);max-width:480px;
+  margin:0 auto 40px;line-height:1.7;font-weight:300;
+  position:relative;z-index:1;
+}
+.cta-actions{
+  display:flex;gap:16px;justify-content:center;flex-wrap:wrap;
+  position:relative;z-index:1;
+}
+.cta-note{
+  font-size:12px;color:var(--muted);margin-top:16px;
+  position:relative;z-index:1;
+}
+
+/* ── FOOTER ─────────────────────────────────────────────────────────────── */
+footer{
+  background:var(--deep);
+  border-top:1px solid var(--border);
+  padding:48px 40px 32px;
+}
+.footer-inner{
+  max-width:1100px;margin:0 auto;
+  display:flex;align-items:center;justify-content:space-between;
+  flex-wrap:wrap;gap:24px;
+}
+.footer-logo{
+  font-family:'Syne',sans-serif;font-size:20px;font-weight:800;
+  color:var(--white);text-decoration:none;
+  display:flex;align-items:center;gap:8px;
+}
+.footer-logo .dot{
+  width:6px;height:6px;border-radius:50%;
+  background:var(--cyan);box-shadow:0 0 8px var(--cyan);
+}
+.footer-links{display:flex;gap:24px;list-style:none;flex-wrap:wrap}
+.footer-links a{font-size:13px;color:var(--muted);text-decoration:none;transition:.2s}
+.footer-links a:hover{color:var(--cyan)}
+.footer-copy{
+  width:100%;text-align:center;
+  font-size:12px;color:var(--muted);
+  margin-top:32px;padding-top:24px;
+  border-top:1px solid var(--border);
+}
+
+/* ── SCROLL REVEAL ──────────────────────────────────────────────────────── */
+.reveal{opacity:0;transform:translateY(30px);transition:.7s ease}
+.reveal.visible{opacity:1;transform:translateY(0)}
+
+/* ── RESPONSIVE ─────────────────────────────────────────────────────────── */
+@media(max-width:768px){
+  nav{padding:14px 20px}
+  .nav-links{display:none}
+  section{padding:70px 20px}
+  .qr-section{grid-template-columns:1fr;gap:40px}
+  .qr-visual{display:none}
+  .hero{padding:100px 20px 60px}
+  .hero-stats{gap:28px}
+  .stat-num{font-size:28px}
+}
+</style>
+</head>
+<body>
+
+<div class="grid-bg"></div>
+
+<!-- ── NAV ──────────────────────────────────────────────────────────────── -->
+<nav>
+  <a href="#" class="nav-logo">
+    <div class="dot"></div>
+    QRnet<span style="color:var(--cyan)">.</span>io
+  </a>
+  <ul class="nav-links">
+    <li><a href="#como-funciona">Cómo funciona</a></li>
+    <li><a href="#casos">Casos de uso</a></li>
+    <li><a href="#precios">Precios</a></li>
+  </ul>
+  <a href="#registro" class="nav-cta">Empezar gratis</a>
+</nav>
+
+<!-- ── HERO ─────────────────────────────────────────────────────────────── -->
+<section class="hero">
+  <div class="hero-glow"></div>
+  <div class="hero-glow2"></div>
+
+  <!-- QR decorativo SVG -->
+  <div class="qr-deco">
+    <svg width="320" height="320" viewBox="0 0 320 320" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect x="20" y="20" width="80" height="80" rx="8" fill="none" stroke="rgba(0,200,255,0.6)" stroke-width="6"/>
+      <rect x="36" y="36" width="48" height="48" rx="4" fill="rgba(0,200,255,0.4)"/>
+      <rect x="220" y="20" width="80" height="80" rx="8" fill="none" stroke="rgba(0,200,255,0.6)" stroke-width="6"/>
+      <rect x="236" y="36" width="48" height="48" rx="4" fill="rgba(0,200,255,0.4)"/>
+      <rect x="20" y="220" width="80" height="80" rx="8" fill="none" stroke="rgba(0,200,255,0.6)" stroke-width="6"/>
+      <rect x="36" y="236" width="48" height="48" rx="4" fill="rgba(0,200,255,0.4)"/>
+      <!-- Módulos -->
+      <rect x="120" y="20" width="18" height="18" rx="2" fill="rgba(0,200,255,0.5)"/>
+      <rect x="144" y="20" width="18" height="18" rx="2" fill="rgba(0,200,255,0.5)"/>
+      <rect x="168" y="20" width="18" height="18" rx="2" fill="rgba(0,200,255,0.3)"/>
+      <rect x="120" y="44" width="18" height="18" rx="2" fill="rgba(0,200,255,0.3)"/>
+      <rect x="168" y="44" width="18" height="18" rx="2" fill="rgba(0,200,255,0.5)"/>
+      <rect x="120" y="68" width="18" height="18" rx="2" fill="rgba(0,200,255,0.5)"/>
+      <rect x="144" y="68" width="18" height="18" rx="2" fill="rgba(0,200,255,0.3)"/>
+      <rect x="168" y="68" width="18" height="18" rx="2" fill="rgba(0,200,255,0.5)"/>
+      <rect x="20" y="120" width="18" height="18" rx="2" fill="rgba(0,200,255,0.5)"/>
+      <rect x="20" y="144" width="18" height="18" rx="2" fill="rgba(0,200,255,0.3)"/>
+      <rect x="20" y="168" width="18" height="18" rx="2" fill="rgba(0,200,255,0.5)"/>
+      <rect x="44" y="120" width="18" height="18" rx="2" fill="rgba(0,200,255,0.3)"/>
+      <rect x="44" y="168" width="18" height="18" rx="2" fill="rgba(0,200,255,0.3)"/>
+      <rect x="68" y="120" width="18" height="18" rx="2" fill="rgba(0,200,255,0.5)"/>
+      <rect x="68" y="144" width="18" height="18" rx="2" fill="rgba(0,200,255,0.5)"/>
+      <rect x="68" y="168" width="18" height="18" rx="2" fill="rgba(0,200,255,0.3)"/>
+      <!-- Centro -->
+      <rect x="120" y="120" width="80" height="80" rx="6" fill="rgba(0,200,255,0.06)" stroke="rgba(0,200,255,0.2)" stroke-width="1"/>
+      <rect x="136" y="136" width="48" height="48" rx="4" fill="rgba(0,200,255,0.15)"/>
+      <rect x="148" y="148" width="24" height="24" rx="3" fill="rgba(0,200,255,0.6)"/>
+      <!-- Más módulos -->
+      <rect x="220" y="120" width="18" height="18" rx="2" fill="rgba(0,200,255,0.3)"/>
+      <rect x="244" y="120" width="18" height="18" rx="2" fill="rgba(0,200,255,0.5)"/>
+      <rect x="268" y="120" width="18" height="18" rx="2" fill="rgba(0,200,255,0.3)"/>
+      <rect x="292" y="120" width="18" height="18" rx="2" fill="rgba(0,200,255,0.5)"/>
+      <rect x="220" y="144" width="18" height="18" rx="2" fill="rgba(0,200,255,0.5)"/>
+      <rect x="268" y="144" width="18" height="18" rx="2" fill="rgba(0,200,255,0.5)"/>
+      <rect x="292" y="144" width="18" height="18" rx="2" fill="rgba(0,200,255,0.3)"/>
+      <rect x="220" y="168" width="18" height="18" rx="2" fill="rgba(0,200,255,0.3)"/>
+      <rect x="244" y="168" width="18" height="18" rx="2" fill="rgba(0,200,255,0.5)"/>
+      <rect x="268" y="168" width="18" height="18" rx="2" fill="rgba(0,200,255,0.3)"/>
+      <rect x="120" y="220" width="18" height="18" rx="2" fill="rgba(0,200,255,0.5)"/>
+      <rect x="144" y="220" width="18" height="18" rx="2" fill="rgba(0,200,255,0.3)"/>
+      <rect x="168" y="220" width="18" height="18" rx="2" fill="rgba(0,200,255,0.5)"/>
+      <rect x="120" y="244" width="18" height="18" rx="2" fill="rgba(0,200,255,0.3)"/>
+      <rect x="168" y="244" width="18" height="18" rx="2" fill="rgba(0,200,255,0.3)"/>
+      <rect x="120" y="268" width="18" height="18" rx="2" fill="rgba(0,200,255,0.5)"/>
+      <rect x="144" y="268" width="18" height="18" rx="2" fill="rgba(0,200,255,0.5)"/>
+      <rect x="168" y="268" width="18" height="18" rx="2" fill="rgba(0,200,255,0.3)"/>
+      <rect x="220" y="220" width="18" height="18" rx="2" fill="rgba(0,200,255,0.4)"/>
+      <rect x="244" y="244" width="18" height="18" rx="2" fill="rgba(0,200,255,0.4)"/>
+      <rect x="268" y="220" width="18" height="18" rx="2" fill="rgba(0,200,255,0.4)"/>
+      <rect x="292" y="244" width="18" height="18" rx="2" fill="rgba(0,200,255,0.4)"/>
+      <rect x="268" y="268" width="18" height="18" rx="2" fill="rgba(0,200,255,0.4)"/>
+      <rect x="292" y="268" width="18" height="18" rx="2" fill="rgba(0,200,255,0.4)"/>
+    </svg>
+  </div>
+
+  <div class="hero-inner">
+    <div class="hero-chip">
+      <div class="chip-dot"></div>
+      Plataforma Universal de Identidad QR
+    </div>
+    <h1 class="hero-title">
+      Cualquier objeto.
+      <span class="accent">Un scan.</span>
+      <span class="line2">Conectado para siempre.</span>
+    </h1>
+    <p class="hero-sub">
+      QRnet.io vincula cualquier objeto físico al mundo digital mediante un código QR único.
+      Gestión de incidencias, identificación de propietario, antirrobo, trazabilidad y mucho más.
+    </p>
+    <div class="hero-actions">
+      <a href="#registro" class="btn-primary">Crear mi primer QR gratis</a>
+      <a href="#casos" class="btn-outline">Ver casos de uso</a>
+    </div>
+    <div class="hero-stats">
+      <div class="stat-item">
+        <div class="stat-num">∞</div>
+        <div class="stat-label">Tipos de objetos</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">0€</div>
+        <div class="stat-label">Para empezar</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">3s</div>
+        <div class="stat-label">Para contactar</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">100%</div>
+        <div class="stat-label">Sin apps</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── CÓMO FUNCIONA ─────────────────────────────────────────────────────── -->
+<section class="how" id="como-funciona">
+  <div class="container">
+    <div class="reveal">
+      <div class="section-label">El proceso</div>
+      <h2 class="section-title">Tan simple como<br>escanear y listo</h2>
+      <p class="section-sub">Sin aplicaciones, sin registros previos, sin complicaciones para el usuario final.</p>
+    </div>
+    <div class="steps reveal">
+      <div class="step">
+        <div class="step-num">01</div>
+        <div class="step-icon">📋</div>
+        <h3>Registra tu objeto</h3>
+        <p>Crea una cuenta gratuita e introduce los datos de tu objeto: nombre, ubicación, propietario, tipo y cualquier campo personalizado que necesites.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">02</div>
+        <div class="step-icon">🎯</div>
+        <h3>Genera el QR único</h3>
+        <p>El sistema genera automáticamente un código QR único e irrepetible vinculado a tu objeto. Descárgalo en PNG, PDF o formato pegatina listo para imprimir.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">03</div>
+        <div class="step-icon">📌</div>
+        <h3>Coloca la etiqueta</h3>
+        <p>Pega, atornilla o remacha el QR en tu objeto. Desde pegatinas económicas hasta placas metálicas de alta durabilidad para entornos exigentes.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">04</div>
+        <div class="step-icon">⚡</div>
+        <h3>Escanea y conecta</h3>
+        <p>Cualquier persona con un smartphone escanea el QR y accede instantáneamente a la información del objeto y puede contactar al responsable vía WhatsApp o email.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── CASOS DE USO ──────────────────────────────────────────────────────── -->
+<section id="casos" style="padding:100px 40px">
+  <div class="container">
+    <div class="reveal">
+      <div class="section-label">Casos de uso</div>
+      <h2 class="section-title">Un QR.<br>Infinitas aplicaciones.</h2>
+      <p class="section-sub">Desde máquinas expendedoras hasta bicicletas, mascotas o material industrial. Si tiene forma física, tiene identidad digital.</p>
+    </div>
+    <div class="cases-grid reveal">
+
+      <div class="case-card featured">
+        <div class="case-badge">Activo</div>
+        <span class="case-emoji">🚬</span>
+        <div class="case-tag">Tabaco & Vending</div>
+        <h3>Máquinas Expendedoras</h3>
+        <p>Gestión completa de incidencias para máquinas de tabaco y vending. El usuario reporta el problema en segundos sin guardar ningún contacto.</p>
+        <ul class="case-features">
+          <li>WhatsApp pre-rellenado con datos de la máquina</li>
+          <li>Control de Tasa PVR y caducidades</li>
+          <li>Planograma de etiquetas adjunto</li>
+          <li>Cambio de responsable sin cambiar el QR</li>
+        </ul>
+      </div>
+
+      <div class="case-card">
+        <span class="case-emoji">🚲</span>
+        <div class="case-tag">Antirrobo</div>
+        <h3>Vehículos & Bicicletas</h3>
+        <p>Identificación de propietario, cambio de titularidad con doble confirmación y red comunitaria de alertas en caso de robo.</p>
+        <ul class="case-features">
+          <li>Placa QR metálica remachable</li>
+          <li>Cambio de propiedad verificado</li>
+          <li>Alerta de robo a usuarios cercanos</li>
+          <li>Verificación antes de compra de segunda mano</li>
+        </ul>
+      </div>
+
+      <div class="case-card">
+        <span class="case-emoji">🏭</span>
+        <div class="case-tag">Industrial</div>
+        <h3>Equipos & Maquinaria</h3>
+        <p>Trazabilidad completa de equipos industriales, registro de mantenimientos, manuales técnicos y contacto de soporte inmediato.</p>
+        <ul class="case-features">
+          <li>Historial de mantenimiento</li>
+          <li>Manuales y documentación adjunta</li>
+          <li>Contacto de soporte técnico directo</li>
+          <li>Control de garantías y revisiones</li>
+        </ul>
+      </div>
+
+      <div class="case-card">
+        <span class="case-emoji">🐾</span>
+        <div class="case-tag">Mascotas</div>
+        <h3>Identificación de Mascotas</h3>
+        <p>Medalla QR para el collar de tu mascota. Si se pierde, cualquier persona puede escanear y contactar al dueño al instante.</p>
+        <ul class="case-features">
+          <li>Datos del propietario accesibles de inmediato</li>
+          <li>Información médica y alergias</li>
+          <li>Contacto de emergencia alternativo</li>
+          <li>Sin app necesaria para el rescatador</li>
+        </ul>
+      </div>
+
+      <div class="case-card">
+        <span class="case-emoji">🏠</span>
+        <div class="case-tag">Inmobiliario</div>
+        <h3>Propiedades & Alquileres</h3>
+        <p>QR en puertas y buzones para que los inquilinos contacten al administrador, reporten incidencias o accedan a información del inmueble.</p>
+        <ul class="case-features">
+          <li>Reporte de averías instantáneo</li>
+          <li>Acceso a normas de la comunidad</li>
+          <li>Historial de incidencias por unidad</li>
+          <li>Múltiples contactos según tipo de avería</li>
+        </ul>
+      </div>
+
+      <div class="case-card">
+        <span class="case-emoji">🎒</span>
+        <div class="case-tag">Personal</div>
+        <h3>Objetos Personales</h3>
+        <p>Maletas, instrumentos musicales, cámaras fotográficas, equipos de deporte. Si lo pierdes, quien lo encuentre puede devolvértelo.</p>
+        <ul class="case-features">
+          <li>Contacto anónimo del encontrador</li>
+          <li>Recompensa opcional configurable</li>
+          <li>Sin datos personales expuestos públicamente</li>
+          <li>Notificación push al propietario</li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ── FEATURES ──────────────────────────────────────────────────────────── -->
+<section class="features" id="features">
+  <div class="container">
+    <div class="reveal" style="display:flex;gap:80px;align-items:center;flex-wrap:wrap">
+      <div class="qr-visual" style="flex-shrink:0">
+        <div class="qr-ring"></div>
+        <div class="qr-ring2"></div>
+        <div class="qr-box">
+          <div style="text-align:center;position:relative;z-index:1">
+            <div style="font-size:48px;margin-bottom:8px">⚡</div>
+            <div style="font-family:'Syne',sans-serif;font-size:11px;font-weight:700;color:var(--cyan);letter-spacing:.1em;text-transform:uppercase">Escanea</div>
+          </div>
+        </div>
+      </div>
+      <div style="flex:1;min-width:280px">
+        <div class="section-label">Tecnología</div>
+        <h2 class="section-title">Actualiza los datos.<br>El QR nunca cambia.</h2>
+        <p class="section-sub" style="margin-bottom:32px">Esta es la ventaja clave. El código QR físico es permanente. La información digital que hay detrás puede actualizarse en cualquier momento desde tu panel de control.</p>
+        <div style="display:flex;flex-direction:column;gap:16px">
+          <div style="display:flex;gap:14px;align-items:flex-start">
+            <div style="width:36px;height:36px;border-radius:8px;background:rgba(0,200,255,.1);border:1px solid rgba(0,200,255,.2);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:16px">📞</div>
+            <div>
+              <div style="font-family:'Syne',sans-serif;font-size:14px;font-weight:700;color:var(--white);margin-bottom:4px">Cambia el responsable, no el QR</div>
+              <div style="font-size:13px;color:var(--muted)">Si cambia el propietario o el teléfono de contacto, actualizas el dato en el panel y el QR ya impreso funciona con la nueva información.</div>
+            </div>
+          </div>
+          <div style="display:flex;gap:14px;align-items:flex-start">
+            <div style="width:36px;height:36px;border-radius:8px;background:rgba(0,200,255,.1);border:1px solid rgba(0,200,255,.2);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:16px">🔒</div>
+            <div>
+              <div style="font-family:'Syne',sans-serif;font-size:14px;font-weight:700;color:var(--white);margin-bottom:4px">Privacidad controlada</div>
+              <div style="font-size:13px;color:var(--muted)">Tú decides qué información es pública y cuál solo accesible para roles autorizados. El propietario siempre tiene el control.</div>
+            </div>
+          </div>
+          <div style="display:flex;gap:14px;align-items:flex-start">
+            <div style="width:36px;height:36px;border-radius:8px;background:rgba(0,200,255,.1);border:1px solid rgba(0,200,255,.2);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:16px">📊</div>
+            <div>
+              <div style="font-family:'Syne',sans-serif;font-size:14px;font-weight:700;color:var(--white);margin-bottom:4px">Analítica de escaneos</div>
+              <div style="font-size:13px;color:var(--muted)">Sabe cuántas veces se ha escaneado tu QR, desde dónde y en qué momento. Información valiosa para gestionar tu flota de objetos.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="features-grid reveal" style="margin-top:80px">
+      <div class="feat">
+        <div class="feat-icon">🌍</div>
+        <h4>Sin fronteras</h4>
+        <p>Funciona en cualquier país, en cualquier idioma, con cualquier smartphone. Solo necesitas una cámara.</p>
+      </div>
+      <div class="feat">
+        <div class="feat-icon">⚡</div>
+        <h4>Instantáneo</h4>
+        <p>De escaneo a contacto en menos de 3 segundos. Sin registros, sin descargas, sin fricciones.</p>
+      </div>
+      <div class="feat">
+        <div class="feat-icon">💬</div>
+        <h4>WhatsApp nativo</h4>
+        <p>El mensaje se genera automáticamente con todos los datos del objeto. El usuario solo describe el problema.</p>
+      </div>
+      <div class="feat">
+        <div class="feat-icon">🎨</div>
+        <h4>QR personalizable</h4>
+        <p>Logo, colores, forma. Tu QR puede tener identidad de marca sin perder compatibilidad de escaneo.</p>
+      </div>
+      <div class="feat">
+        <div class="feat-icon">📁</div>
+        <h4>Documentos adjuntos</h4>
+        <p>Manuales, garantías, planogramas, fotos. Toda la documentación del objeto accesible desde el QR.</p>
+      </div>
+      <div class="feat">
+        <div class="feat-icon">🔔</div>
+        <h4>Notificaciones</h4>
+        <p>Recibe alertas por email o WhatsApp cuando alguien escanea tu QR o envía una incidencia.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── PRECIOS ────────────────────────────────────────────────────────────── -->
+<section id="precios" style="padding:100px 40px;text-align:center">
+  <div class="container">
+    <div class="reveal">
+      <div class="section-label" style="justify-content:center">Precios</div>
+      <h2 class="section-title">Empieza gratis.<br>Escala cuando quieras.</h2>
+      <p class="section-sub" style="margin:0 auto 60px">Sin sorpresas, sin letra pequeña. El plan gratuito es permanente.</p>
+    </div>
+    <div class="plans reveal">
+      <div class="plan">
+        <div class="plan-name">Básico</div>
+        <div class="plan-price">0<span>€</span></div>
+        <div class="plan-period">Para siempre</div>
+        <ul class="plan-features">
+          <li><span class="check">✓</span> Hasta 5 QRs activos</li>
+          <li><span class="check">✓</span> Página pública del objeto</li>
+          <li><span class="check">✓</span> Contacto vía WhatsApp</li>
+          <li><span class="check">✓</span> Descarga PNG del QR</li>
+          <li><span class="check">✓</span> 1 imagen por objeto</li>
+          <li><span class="cross">–</span> <span style="color:var(--muted)">PDF pegatina personalizada</span></li>
+          <li><span class="cross">–</span> <span style="color:var(--muted)">Analítica de escaneos</span></li>
+          <li><span class="cross">–</span> <span style="color:var(--muted)">Historial de incidencias</span></li>
+        </ul>
+        <a href="#registro" class="plan-btn free">Empezar gratis</a>
+      </div>
+
+      <div class="plan pro">
+        <div class="plan-badge">Más popular</div>
+        <div class="plan-name">Pro</div>
+        <div class="plan-price">9<span>€</span></div>
+        <div class="plan-period">por mes · hasta 50 QRs</div>
+        <ul class="plan-features">
+          <li><span class="check">✓</span> Hasta 50 QRs activos</li>
+          <li><span class="check">✓</span> Todo lo del plan Básico</li>
+          <li><span class="check">✓</span> PDF pegatina personalizada</li>
+          <li><span class="check">✓</span> Analítica de escaneos</li>
+          <li><span class="check">✓</span> Historial de incidencias</li>
+          <li><span class="check">✓</span> Múltiples imágenes / docs</li>
+          <li><span class="check">✓</span> Notificaciones por email</li>
+          <li><span class="check">✓</span> Soporte prioritario</li>
+        </ul>
+        <a href="#registro" class="plan-btn paid">Empezar prueba gratis</a>
+      </div>
+
+      <div class="plan">
+        <div class="plan-name">Business</div>
+        <div class="plan-price" style="font-size:36px">A medida</div>
+        <div class="plan-period">para empresas y flotas grandes</div>
+        <ul class="plan-features">
+          <li><span class="check">✓</span> QRs ilimitados</li>
+          <li><span class="check">✓</span> Todo lo del plan Pro</li>
+          <li><span class="check">✓</span> White label (marca propia)</li>
+          <li><span class="check">✓</span> API de integración</li>
+          <li><span class="check">✓</span> Usuarios y roles múltiples</li>
+          <li><span class="check">✓</span> Dashboard personalizado</li>
+          <li><span class="check">✓</span> Facturación por proyecto</li>
+          <li><span class="check">✓</span> Gestor de cuenta dedicado</li>
+        </ul>
+        <a href="mailto:info@qrnet.io" class="plan-btn free">Contactar</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── CTA ───────────────────────────────────────────────────────────────── -->
+<section class="cta-section" id="registro">
+  <div class="cta-bg"></div>
+  <div class="container reveal">
+    <h2>Tu objeto.<br>Su identidad digital.</h2>
+    <p>Registra tu primer QR en menos de 2 minutos. Sin tarjeta de crédito, sin compromisos.</p>
+    <div class="cta-actions">
+      <a href="#" class="btn-primary" style="font-size:16px;padding:16px 40px">Crear cuenta gratis →</a>
+      <a href="mailto:info@qrnet.io" class="btn-outline" style="font-size:16px;padding:16px 40px">Hablar con el equipo</a>
+    </div>
+    <p class="cta-note">¿Ya tienes máquinas en maquinasdetabaco.com? <a href="https://www.maquinasdetabaco.com/index.php/mis-maquinas" style="color:var(--cyan);text-decoration:none">Accede directamente →</a></p>
+  </div>
+</section>
+
+<!-- ── FOOTER ────────────────────────────────────────────────────────────── -->
+<footer>
+  <div class="footer-inner">
+    <a href="#" class="footer-logo">
+      <div class="dot"></div>
+      QRnet<span style="color:var(--cyan)">.</span>io
+    </a>
+    <ul class="footer-links">
+      <li><a href="#como-funciona">Cómo funciona</a></li>
+      <li><a href="#casos">Casos de uso</a></li>
+      <li><a href="#precios">Precios</a></li>
+      <li><a href="mailto:info@qrnet.io">Contacto</a></li>
+      <li><a href="#">Aviso legal</a></li>
+      <li><a href="#">Privacidad</a></li>
+    </ul>
+  </div>
+  <div class="footer-copy">
+    © 2026 QRnet.io · Desarrollado por <a href="https://www.maquinasdetabaco.com" style="color:var(--cyan);text-decoration:none">NVM · New Vending Machines</a> · Tudela, Navarra
+  </div>
+</footer>
+
+<script>
+// Scroll reveal
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) { e.target.classList.add('visible'); }
+  });
+}, { threshold: 0.1 });
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+// Nav scroll effect
+window.addEventListener('scroll', () => {
+  const nav = document.querySelector('nav');
+  nav.style.background = window.scrollY > 50
+    ? 'rgba(2,6,8,.95)' : 'rgba(2,6,8,.7)';
+});
+</script>
+</body>
+</html>
