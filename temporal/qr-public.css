@@ -1,0 +1,188 @@
+/* ── PÁGINA PÚBLICA QR ──────────────────────────────────────────────────── */
+.qr-page {
+  font-family: 'DM Sans', sans-serif;
+  background-color: #F7F0E6;
+  color: #1C1209;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-bottom: 48px;
+  background-image:
+    radial-gradient(ellipse at 80% 0%, rgba(200,131,42,.12) 0%, transparent 60%),
+    radial-gradient(ellipse at 20% 100%, rgba(139,94,60,.08) 0%, transparent 50%);
+}
+
+.qr-topbar {
+  width: 100%;
+  background: #1C1209;
+  padding: 10px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.qr-brand {
+  font-family: 'Playfair Display', 'Syne', serif;
+  font-size: 15px;
+  color: #E8A84C;
+  letter-spacing: .04em;
+}
+.qr-badge {
+  font-size: 11px;
+  font-weight: 500;
+  color: rgba(255,255,255,.4);
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+
+/* ── CARD ───────────────────────────────────────────────────────────────── */
+.qr-card {
+  width: 100%;
+  max-width: 420px;
+  margin: 28px 16px 0;
+  background: #FFFDF9;
+  border-radius: 22px;
+  overflow: hidden;
+  box-shadow: 0 8px 40px rgba(28,18,9,.13);
+  border: 1px solid rgba(200,131,42,.18);
+  animation: qrUp .45s ease both;
+}
+@keyframes qrUp {
+  from { opacity: 0; transform: translateY(18px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Header oscuro */
+.qr-card-header {
+  background: linear-gradient(135deg, #1C1209, #2E1A0E);
+  padding: 24px 24px 20px;
+  position: relative;
+  overflow: hidden;
+}
+.qr-card-header::after {
+  content: '';
+  position: absolute;
+  right: -20px; top: -20px;
+  width: 130px; height: 130px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(200,131,42,.18) 0%, transparent 70%);
+  pointer-events: none;
+}
+.qr-estab-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+.qr-estab-icon {
+  width: 42px; height: 42px;
+  background: rgba(200,131,42,.15);
+  border: 1px solid rgba(200,131,42,.3);
+  border-radius: 11px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 21px; flex-shrink: 0;
+}
+.qr-sublabel {
+  font-size: 10px; font-weight: 600; color: #E8A84C;
+  text-transform: uppercase; letter-spacing: .1em; margin-bottom: 2px;
+}
+.qr-estab-name {
+  font-family: 'Playfair Display', 'Syne', serif;
+  font-size: 20px; color: #fff; line-height: 1.15;
+}
+.qr-addr {
+  display: flex; align-items: flex-start; gap: 7px; margin-top: 8px;
+}
+.qr-addr svg { flex-shrink: 0; margin-top: 2px; opacity: .55; }
+.qr-addr span { font-size: 13px; color: rgba(255,255,255,.6); line-height: 1.4; }
+.qr-status-pill {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: rgba(37,211,102,.12);
+  border: 1px solid rgba(37,211,102,.25);
+  border-radius: 20px; padding: 4px 12px;
+  font-size: 10px; font-weight: 600; color: #2ecc71;
+  text-transform: uppercase; letter-spacing: .08em; margin-top: 14px;
+}
+.qr-status-dot {
+  width: 6px; height: 6px; background: #2ecc71; border-radius: 50%;
+  animation: qrPulse 2s infinite;
+}
+@keyframes qrPulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.5;transform:scale(1.3)} }
+
+/* Body */
+.qr-body { padding: 22px; }
+
+.qr-section-title {
+  font-size: 10px; font-weight: 600; color: #9C8672;
+  text-transform: uppercase; letter-spacing: .12em;
+  margin-bottom: 12px;
+  display: flex; align-items: center; gap: 7px;
+}
+.qr-section-title::after {
+  content: ''; flex: 1; height: 1px; background: rgba(139,94,60,.12);
+}
+.qr-divider {
+  height: 1px; background: rgba(139,94,60,.12); margin: 20px 0;
+}
+
+/* Info grid */
+.qr-info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; margin-bottom: 6px; }
+.qr-info-item { background: #F7F0E6; border-radius: 12px; padding: 11px 13px; border: 1px solid rgba(139,94,60,.12); }
+.qr-info-item.full { grid-column: 1 / -1; }
+.qr-ikey { font-size: 9.5px; font-weight: 600; color: #9C8672; text-transform: uppercase; letter-spacing: .09em; margin-bottom: 3px; }
+.qr-ival { font-size: 13px; font-weight: 600; color: #1C1209; }
+.pvr-ok   { color: #27ae60; }
+.pvr-warn { color: #e67e22; }
+.pvr-err  { color: #c0392b; }
+
+/* Responsable */
+.qr-resp-block {
+  display: flex; align-items: flex-start; gap: 13px;
+  background: #F7F0E6; border-radius: 14px;
+  padding: 15px; border: 1px solid rgba(139,94,60,.12);
+}
+.qr-avatar {
+  width: 46px; height: 46px; flex-shrink: 0;
+  background: linear-gradient(135deg, #8B5E3C, #C8832A);
+  border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  font-family: 'Playfair Display', 'Syne', serif;
+  font-size: 19px; color: #fff;
+}
+.qr-resp-name { font-family: 'Playfair Display', 'Syne', serif; font-size: 15px; font-weight: 700; line-height: 1.2; }
+.qr-resp-role { font-size: 11.5px; color: #9C8672; margin-top: 2px; }
+.qr-resp-addr { font-size: 12px; color: #1C1209; margin-top: 5px; display: flex; align-items: flex-start; gap: 5px; line-height: 1.4; }
+.qr-resp-tel  { font-size: 13px; font-weight: 600; color: #8B5E3C; margin-top: 5px; display: flex; align-items: center; gap: 5px; }
+
+/* WhatsApp button */
+.qr-btn-wa {
+  width: 100%;
+  background: linear-gradient(135deg, #1ebe5d, #25D366);
+  color: #fff; border: none; border-radius: 14px;
+  padding: 17px 22px;
+  font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 600;
+  cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px;
+  text-decoration: none;
+  box-shadow: 0 4px 20px rgba(37,211,102,.3);
+  transition: .15s;
+}
+.qr-btn-wa:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(37,211,102,.4); }
+
+.qr-hint {
+  text-align: center;
+  font-size: 11px; color: #9C8672;
+  margin-top: 11px; line-height: 1.6;
+}
+
+/* Footer */
+.qr-footer {
+  margin-top: 28px;
+  text-align: center;
+  font-size: 11px; color: #9C8672;
+  display: flex; flex-direction: column; align-items: center; gap: 3px;
+}
+.qr-footer-logo {
+  font-family: 'Playfair Display', 'Syne', serif;
+  font-size: 13px; color: #8B5E3C;
+}
+.qr-footer a { color: #8B5E3C; text-decoration: none; font-weight: 500; }
+.qr-footer a:hover { text-decoration: underline; }
