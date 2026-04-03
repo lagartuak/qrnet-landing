@@ -12,6 +12,7 @@ export default function MaquinaTabacoPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [camposError, setCamposError] = useState<string[]>([]);
   const [form, setForm] = useState({
     estab_nombre: '',
     estab_dir: '',
@@ -28,14 +29,35 @@ export default function MaquinaTabacoPage() {
     observaciones: '',
   });
 
-  const set = (k: string, v: string) => setForm(f => ({ ...f, [k]: v }));
+  const set = (k: string, v: string) => {
+    setForm(f => ({ ...f, [k]: v }));
+    setCamposError(prev => prev.filter(c => c !== k));
+  };
+
+  const inputStyle = (campo: string) => ({
+    borderColor: camposError.includes(campo) ? 'rgba(255,80,80,.6)' : undefined,
+    background: camposError.includes(campo) ? 'rgba(255,80,80,.05)' : undefined,
+  });
 
   const handleSubmit = async () => {
     setError('');
-    if (!form.estab_nombre || !form.estab_dir || !form.estab_ciudad || !form.tel_resp || !form.modelo) {
-      setError('Por favor rellena los campos obligatorios (*)');
+    const vacios: string[] = [];
+    if (!form.estab_nombre) vacios.push('estab_nombre');
+    if (!form.estab_dir)    vacios.push('estab_dir');
+    if (!form.estab_ciudad) vacios.push('estab_ciudad');
+    if (!form.tel_resp)     vacios.push('tel_resp');
+    if (!form.modelo)       vacios.push('modelo');
+
+    if (vacios.length > 0) {
+      setCamposError(vacios);
+      setError('Por favor rellena los campos marcados en rojo (*)');
+      setTimeout(() => {
+        document.querySelector('.form-error')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }, 100);
       return;
     }
+
+    setCamposError([]);
     setLoading(true);
     try {
       const res = await fetch('/api/qr/crear', {
@@ -94,22 +116,26 @@ export default function MaquinaTabacoPage() {
             <div className="form-field full">
               <label>Nombre del establecimiento <span className="req">*</span></label>
               <input type="text" placeholder="Ej: Bar El Rincón / Estanco Hernández"
-                value={form.estab_nombre} onChange={e => set('estab_nombre', e.target.value)} />
+                value={form.estab_nombre} style={inputStyle('estab_nombre')}
+                onChange={e => set('estab_nombre', e.target.value)} />
             </div>
             <div className="form-field full">
               <label>Dirección <span className="req">*</span></label>
               <input type="text" placeholder="Ej: Calle Gayarre 12"
-                value={form.estab_dir} onChange={e => set('estab_dir', e.target.value)} />
+                value={form.estab_dir} style={inputStyle('estab_dir')}
+                onChange={e => set('estab_dir', e.target.value)} />
             </div>
             <div className="form-field">
               <label>Código postal</label>
               <input type="text" placeholder="31500" maxLength={5}
-                value={form.estab_cp} onChange={e => set('estab_cp', e.target.value)} />
+                value={form.estab_cp}
+                onChange={e => set('estab_cp', e.target.value)} />
             </div>
             <div className="form-field">
               <label>Ciudad / Municipio <span className="req">*</span></label>
               <input type="text" placeholder="Tudela"
-                value={form.estab_ciudad} onChange={e => set('estab_ciudad', e.target.value)} />
+                value={form.estab_ciudad} style={inputStyle('estab_ciudad')}
+                onChange={e => set('estab_ciudad', e.target.value)} />
             </div>
           </div>
         </div>
@@ -120,13 +146,15 @@ export default function MaquinaTabacoPage() {
             <div className="form-field">
               <label>Teléfono WhatsApp <span className="req">*</span></label>
               <input type="tel" placeholder="+34 600 000 000"
-                value={form.tel_resp} onChange={e => set('tel_resp', e.target.value)} />
+                value={form.tel_resp} style={inputStyle('tel_resp')}
+                onChange={e => set('tel_resp', e.target.value)} />
               <span className="form-hint">Las incidencias llegarán a este número</span>
             </div>
             <div className="form-field">
               <label>Email de contacto</label>
               <input type="email" placeholder="responsable@email.com"
-                value={form.email_resp} onChange={e => set('email_resp', e.target.value)} />
+                value={form.email_resp}
+                onChange={e => set('email_resp', e.target.value)} />
             </div>
           </div>
         </div>
@@ -143,12 +171,14 @@ export default function MaquinaTabacoPage() {
             <div className="form-field">
               <label>Modelo <span className="req">*</span></label>
               <input type="text" placeholder="Ej: Serie N v13"
-                value={form.modelo} onChange={e => set('modelo', e.target.value)} />
+                value={form.modelo} style={inputStyle('modelo')}
+                onChange={e => set('modelo', e.target.value)} />
             </div>
             <div className="form-field">
               <label>Número de serie</label>
               <input type="text" placeholder="Ej: AZ-N-20847"
-                value={form.num_serie} onChange={e => set('num_serie', e.target.value)} />
+                value={form.num_serie}
+                onChange={e => set('num_serie', e.target.value)} />
             </div>
             <div className="form-field">
               <label>Fecha de instalación</label>
@@ -177,10 +207,11 @@ export default function MaquinaTabacoPage() {
         <div className="form-section">
           <div className="form-section-title">Observaciones (opcional)</div>
           <textarea rows={3} placeholder="Notas adicionales..."
-            value={form.observaciones} onChange={e => set('observaciones', e.target.value)} />
+            value={form.observaciones}
+            onChange={e => set('observaciones', e.target.value)} />
         </div>
 
-        {error && <div className="form-error">{error}</div>}
+        {error && <div className="form-error">⚠️ {error}</div>}
 
         <div className="form-actions">
           <Link href="/dashboard/crear" className="btn-cancel">Cancelar</Link>
