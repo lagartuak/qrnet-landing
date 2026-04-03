@@ -3,6 +3,7 @@ import Google from 'next-auth/providers/google'
 import Credentials from 'next-auth/providers/credentials'
 import pool from '@/lib/db'
 import bcrypt from 'bcryptjs'
+import { nanoid } from 'nanoid'
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   providers: [
@@ -31,9 +32,36 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     signIn: '/login',
   },
   callbacks: {
+    async signIn({ user, account }) {
+      if (account?.provider === 'google') {
+        const [rows]: any = await pool.query(
+          'SELECT * FROM users WHERE email = ?',
+          [user.email]
+        )
+        if (rows.length === 0) {
+          const id = nanoid()
+          await pool.query(
+            'INSERT INTO users (id, email, name, status) VALUES (?, ?, ?, ?)',
+            [id, user.email, user.name, 'active']
+          )
+          await pool.query(
+            'INSERT INTO subscriptions (id, user_id, plan) VALUES (?, ?, ?)',
+            [nanoid(), id, 'free']
+          )
+          user.id = id
+        } else {
+          user.id = rows[0].id
+        }
+      }
+      return true
+    },
+    async jwt({ token, user }) {
+      if (user?.id) token.userId = user.id
+      return token
+    },
     async session({ session, token }) {
-      if (token.sub) session.user.id = token.sub
+      if (token.userId) session.user.id = token.userId as string
       return session
-    }
-  }
+    },
+  },
 })
