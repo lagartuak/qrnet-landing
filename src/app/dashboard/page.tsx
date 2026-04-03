@@ -5,6 +5,8 @@ import pool from '@/lib/db'
 
 export default async function DashboardPage() {
   const session = await auth()
+  console.log('SESSION USER ID:', session?.user?.id)
+  console.log('SESSION USER EMAIL:', session?.user?.email)
   if (!session?.user) redirect('/login')
 
   const [qrRows]: any = await pool.query(
