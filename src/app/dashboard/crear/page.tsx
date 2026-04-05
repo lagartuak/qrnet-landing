@@ -8,9 +8,17 @@ const tipos = [
   {
     slug: 'maquina-tabaco',
     emoji: '🚬',
-    titulo: 'Máquina de Tabaco / Vending',
+    titulo: 'Máquina de Tabaco',
     desc: 'Gestión de incidencias, control PVR, planograma y contacto de responsable.',
     tags: ['WhatsApp', 'Control PVR', 'Planograma'],
+    activo: true,
+  },
+  {
+    slug: 'vending',
+    emoji: '🥤',
+    titulo: 'Máquina Vending',
+    desc: 'Café, bebidas, snacks, bocadillos, vapers y más. Gestión de incidencias por WhatsApp.',
+    tags: ['WhatsApp', 'Múltiples tipos', 'Por zonas'],
     activo: true,
   },
   {
@@ -46,7 +54,6 @@ const tipos = [
     activo: false,
   },
 ];
-
 export default function CrearPage() {
   const router = useRouter();
 
