@@ -26,7 +26,7 @@ export default async function DashboardPage() {
 
   const plan = subRows[0]?.plan || 'free'
   const qrCount = qrRows.length
-  const qrLimit = plan === 'free' ? 5 : plan === 'pro' ? 20 : 999999
+  const qrLimit = plan === 'free' ? 20 : plan === 'pro' ? 21 : 999999
 
   return (
     <main style={{ minHeight: '100vh', background: '#020608', color: '#c8dde5', fontFamily: 'sans-serif' }}>
