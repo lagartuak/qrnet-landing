@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/lib/auth';
+import { auth } from '@/auth';
 import pool from '@/lib/db';
 
 async function generarCodigo(ciudad: string): Promise<string> {
@@ -30,10 +29,22 @@ async function generarCodigo(ciudad: string): Promise<string> {
 
 export async function POST(req: NextRequest) {
   try {
-    const session = await getServerSession(authOptions);
-    if (!session?.user?.id) {
+    const session = await auth();
+    if (!session?.user?.email) {
       return NextResponse.json({ error: 'No autenticado' }, { status: 401 });
     }
+
+    // Obtener el user_id real desde la BD usando el email
+    const [userRows]: any = await pool.query(
+      'SELECT id FROM users WHERE email = ?',
+      [session.user.email]
+    );
+
+    if (!userRows.length) {
+      return NextResponse.json({ error: 'Usuario no encontrado' }, { status: 404 });
+    }
+
+    const userId = userRows[0].id;
 
     const { object_type, title, object_data } = await req.json();
 
@@ -41,9 +52,10 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Datos incompletos' }, { status: 400 });
     }
 
+    // Comprobar límite plan gratuito (5 QRs)
     const [countRows]: any = await pool.query(
       'SELECT COUNT(*) as total FROM qr_codes WHERE user_id = ? AND is_active = 1',
-      [session.user.id]
+      [userId]
     );
     const total = countRows[0].total;
 
@@ -62,14 +74,7 @@ export async function POST(req: NextRequest) {
       `INSERT INTO qr_codes 
         (user_id, object_type, title, object_data, public_code, qr_url, is_active, created_at)
        VALUES (?, ?, ?, ?, ?, ?, 1, NOW())`,
-      [
-        session.user.id,
-        object_type,
-        title,
-        JSON.stringify(object_data),
-        public_code,
-        qr_url,
-      ]
+      [userId, object_type, title, JSON.stringify(object_data), public_code, qr_url]
     );
 
     return NextResponse.json({ id: result.insertId, public_code, qr_url });
