@@ -52,16 +52,16 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Datos incompletos' }, { status: 400 });
     }
 
-    // Comprobar límite plan gratuito (5 QRs)
+    // Comprobar límite plan gratuito (20 QRs)
     const [countRows]: any = await pool.query(
       'SELECT COUNT(*) as total FROM qr_codes WHERE user_id = ? AND is_active = 1',
       [userId]
     );
     const total = countRows[0].total;
 
-    if (total >= 5) {
+    if (total >= 20) {
       return NextResponse.json(
-        { error: 'Has alcanzado el límite de 5 QRs del plan gratuito. Actualiza a Pro para crear más.' },
+        { error: 'Has alcanzado el límite de 20 QRs del plan gratuito. Actualiza a Pro para crear más.' },
         { status: 403 }
       );
     }
