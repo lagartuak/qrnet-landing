@@ -1,25 +1,33 @@
 import { auth } from '@/auth'
 import { redirect } from 'next/navigation'
 import pool from '@/lib/db'
+import DeleteButton from './DeleteButton'
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 export default async function DashboardPage() {
   const session = await auth()
   if (!session?.user) redirect('/login')
 
+  const email = session.user.email
+
   const [qrRows]: any = await pool.query(
-    'SELECT * FROM qr_codes WHERE user_id = ? ORDER BY created_at DESC',
-    [session.user.id]
+    `SELECT qr_codes.* FROM qr_codes 
+     INNER JOIN users ON qr_codes.user_id = users.id 
+     WHERE users.email = ?
+     ORDER BY qr_codes.created_at DESC`,
+    [email]
   )
 
   const [subRows]: any = await pool.query(
-    'SELECT * FROM subscriptions WHERE user_id = ?',
-    [session.user.id]
+    `SELECT subscriptions.* FROM subscriptions 
+     INNER JOIN users ON subscriptions.user_id = users.id 
+     WHERE users.email = ?`,
+    [email]
   )
 
   const plan = subRows[0]?.plan || 'free'
   const qrCount = qrRows.length
-  const qrLimit = plan === 'free' ? 5 : plan === 'pro' ? 50 : 999999
+  const qrLimit = plan === 'free' ? 20 : plan === 'pro' ? 50 : 999999
 
   return (
     <main style={{ minHeight: '100vh', background: '#020608', color: '#c8dde5', fontFamily: 'sans-serif' }}>
@@ -47,7 +55,7 @@ export default async function DashboardPage() {
             </a>
           )}
           {qrCount >= qrLimit && plan === 'free' && (
-            <a href="/precios" style={{ background: '#ff6b35', color: '#fff', padding: '12px 24px', borderRadius: '40px', fontWeight: 700, fontSize: '14px', textDecoration: 'none' }}>
+            <a href="/#precios" style={{ background: '#ff6b35', color: '#fff', padding: '12px 24px', borderRadius: '40px', fontWeight: 700, fontSize: '14px', textDecoration: 'none' }}>
               Actualizar a Pro
             </a>
           )}
@@ -75,9 +83,15 @@ export default async function DashboardPage() {
               <p style={{ color: '#6a8a95', fontSize: '13px', marginBottom: '16px', wordBreak: 'break-all' }}>
                 qrnet.io/q/{qr.public_code}
               </p>
-              <a href={`/dashboard/qr/${qr.id}`} style={{ color: '#00c8ff', fontSize: '13px', textDecoration: 'none', fontWeight: 600 }}>
-                Ver detalles →
-              </a>
+              <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+                <a href={`/dashboard/qr/${qr.id}`} style={{ color: '#00c8ff', fontSize: '13px', textDecoration: 'none', fontWeight: 600 }}>
+                  Ver detalles →
+                </a>
+                <a href={`/dashboard/qr/${qr.id}/editar`} style={{ color: '#6a8a95', fontSize: '13px', textDecoration: 'none', fontWeight: 600 }}>
+                  ✏️ Editar
+                </a>
+                <DeleteButton qrId={qr.id} />
+              </div>
             </div>
           ))}
         </div>
