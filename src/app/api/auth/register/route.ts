@@ -71,8 +71,3 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'Error interno del servidor' }, { status: 500 })
   }
 }
-```
-
-Luego añade esta línea al `.env.local`:
-```
-NEXT_PUBLIC_URL=http://localhost:3000
