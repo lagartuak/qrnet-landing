@@ -1,6 +1,7 @@
 import { auth } from '@/auth'
 import { redirect } from 'next/navigation'
 import pool from '@/lib/db'
+import DeleteButton from './DeleteButton'
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 export default async function DashboardPage() {
@@ -26,7 +27,7 @@ export default async function DashboardPage() {
 
   const plan = subRows[0]?.plan || 'free'
   const qrCount = qrRows.length
-  const qrLimit = plan === 'free' ? 20 : plan === 'pro' ? 21 : 999999
+  const qrLimit = plan === 'free' ? 20 : plan === 'pro' ? 50 : 999999
 
   return (
     <main style={{ minHeight: '100vh', background: '#020608', color: '#c8dde5', fontFamily: 'sans-serif' }}>
@@ -82,9 +83,15 @@ export default async function DashboardPage() {
               <p style={{ color: '#6a8a95', fontSize: '13px', marginBottom: '16px', wordBreak: 'break-all' }}>
                 qrnet.io/q/{qr.public_code}
               </p>
-              <a href={`/dashboard/qr/${qr.id}`} style={{ color: '#00c8ff', fontSize: '13px', textDecoration: 'none', fontWeight: 600 }}>
-                Ver detalles →
-              </a>
+              <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+                <a href={`/dashboard/qr/${qr.id}`} style={{ color: '#00c8ff', fontSize: '13px', textDecoration: 'none', fontWeight: 600 }}>
+                  Ver detalles →
+                </a>
+                <a href={`/dashboard/qr/${qr.id}/editar`} style={{ color: '#6a8a95', fontSize: '13px', textDecoration: 'none', fontWeight: 600 }}>
+                  ✏️ Editar
+                </a>
+                <DeleteButton qrId={qr.id} />
+              </div>
             </div>
           ))}
         </div>
