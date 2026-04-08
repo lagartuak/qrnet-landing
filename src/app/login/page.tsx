@@ -56,6 +56,9 @@ function LoginForm() {
               {loading ? 'Entrando...' : 'Iniciar sesión'}
             </button>
           </form>
+          <p style={{ textAlign: 'center', marginTop: '12px' }}>
+            <a href="/recuperar" style={{ color: '#00c8ff', fontSize: '13px', textDecoration: 'none' }}>¿Olvidaste tu contraseña?</a>
+          </p>
 
           <div style={{ margin: '24px 0', borderTop: '1px solid rgba(0,200,255,.1)', paddingTop: '24px' }}>
             <button onClick={() => signIn('google', { callbackUrl: '/dashboard' })} style={{ width: '100%', background: '#fff', color: '#000', border: 'none', borderRadius: '40px', padding: '13px', fontSize: '14px', fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}>
