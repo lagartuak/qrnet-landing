@@ -3,6 +3,8 @@ import { auth } from '@/auth'
 import { redirect } from 'next/navigation'
 import pool from '@/lib/db'
 import Link from 'next/link'
+import DownloadButton from './DownloadButton'
+/* eslint-disable @typescript-eslint/no-explicit-any */
 
 export default async function QRDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const session = await auth()
@@ -13,6 +15,9 @@ export default async function QRDetailPage({ params }: { params: Promise<{ id: s
   const qr = rows[0]
   const data = typeof qr.object_data === 'string' ? JSON.parse(qr.object_data) : qr.object_data
   const publicUrl = process.env.NEXTAUTH_URL + '/q/' + qr.public_code
+  const qrImageUrl = 'https://api.qrserver.com/v1/create-qr-code/?size=600x600&data=' + encodeURIComponent(publicUrl)
+  const safeName = (qr.title || 'qr').replace(/[^a-zA-Z0-9áéíóúñÁÉÍÓÚÑ _-]/g, '').replace(/\s+/g, '_')
+  const downloadName = `${qr.public_code}_${safeName}.png`
 
   return (
     <main style={{ minHeight: '100vh', background: '#020608', color: '#c8dde5', fontFamily: 'sans-serif' }}>
@@ -40,7 +45,7 @@ export default async function QRDetailPage({ params }: { params: Promise<{ id: s
             URL: <a href={publicUrl} target="_blank" rel="noreferrer" style={{ color: '#00c8ff', textDecoration: 'none' }}>{publicUrl}</a>
           </p>
           <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap' }}>
-            <a href={'https://api.qrserver.com/v1/create-qr-code/?size=600x600&data=' + encodeURIComponent(publicUrl) + '&download=1'} style={{ background: 'linear-gradient(135deg,#00c8ff,#00e5c0)', color: '#000', padding: '12px 28px', borderRadius: '40px', fontWeight: 700, fontSize: '14px', textDecoration: 'none' }}>⬇ Descargar PNG</a>
+            <DownloadButton url={qrImageUrl} filename={downloadName} />
             <a href={publicUrl} target="_blank" rel="noreferrer" style={{ border: '1px solid rgba(0,200,255,.3)', color: '#00c8ff', padding: '12px 28px', borderRadius: '40px', fontWeight: 600, fontSize: '14px', textDecoration: 'none', background: 'rgba(0,200,255,.05)' }}>👁 Ver página pública</a>
           </div>
         </div>
