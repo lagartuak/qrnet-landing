@@ -27,6 +27,13 @@ async function generarCodigo(ciudad: string): Promise<string> {
   return `${prefijo}-${String(siguiente).padStart(3, '0')}`;
 }
 
+function generarVerificationCode(): string {
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  const nums = '0123456789';
+  const r = (s: string) => s[Math.floor(Math.random() * s.length)];
+  return `${r(chars)}${r(chars)}${r(chars)}-${r(nums)}${r(nums)}${r(nums)}${r(nums)}-${r(chars)}${r(chars)}${r(chars)}${r(chars)}`;
+}
+
 export async function POST(req: NextRequest) {
   try {
     const session = await auth();
@@ -34,7 +41,6 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'No autenticado' }, { status: 401 });
     }
 
-    // Obtener el user_id real desde la BD usando el email
     const [userRows]: any = await pool.query(
       'SELECT id FROM users WHERE email = ?',
       [session.user.email]
@@ -52,7 +58,6 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Datos incompletos' }, { status: 400 });
     }
 
-    // Comprobar límite plan gratuito (20 QRs)
     const [countRows]: any = await pool.query(
       'SELECT COUNT(*) as total FROM qr_codes WHERE user_id = ? AND is_active = 1',
       [userId]
@@ -69,12 +74,13 @@ export async function POST(req: NextRequest) {
     const ciudad = object_data?.estab_ciudad || object_data?.ciudad || 'GEN';
     const public_code = await generarCodigo(ciudad);
     const qr_url = `${process.env.NEXTAUTH_URL}/q/${public_code}`;
+    const verification_code = generarVerificationCode();
 
     const [result]: any = await pool.query(
       `INSERT INTO qr_codes 
-        (user_id, object_type, title, object_data, public_code, qr_url, is_active, created_at)
-       VALUES (?, ?, ?, ?, ?, ?, 1, NOW())`,
-      [userId, object_type, title, JSON.stringify(object_data), public_code, qr_url]
+        (user_id, object_type, title, object_data, public_code, qr_url, verification_code, is_active, created_at)
+       VALUES (?, ?, ?, ?, ?, ?, ?, 1, NOW())`,
+      [userId, object_type, title, JSON.stringify(object_data), public_code, qr_url, verification_code]
     );
 
     return NextResponse.json({ id: result.insertId, public_code, qr_url });
