@@ -20,12 +20,12 @@ export async function POST(req: Request) {
     }
 
     const user = users[0]
-    const token = nanoid(64)
+    const token = nanoid(20)
     const expires = new Date(Date.now() + 60 * 60 * 1000) // 1 hora
 
     // Borrar tokens anteriores de este usuario
     await pool.query(
-      'DELETE FROM email_verifications WHERE user_id = ? AND token LIKE "reset_%"',
+      "DELETE FROM email_verifications WHERE user_id = ? AND token LIKE 'reset_%'",
       [user.id]
     )
 

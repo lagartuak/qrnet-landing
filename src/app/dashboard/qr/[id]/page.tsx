@@ -49,6 +49,17 @@ export default async function QRDetailPage({ params }: { params: Promise<{ id: s
             <a href={publicUrl} target="_blank" rel="noreferrer" style={{ border: '1px solid rgba(0,200,255,.3)', color: '#00c8ff', padding: '12px 28px', borderRadius: '40px', fontWeight: 600, fontSize: '14px', textDecoration: 'none', background: 'rgba(0,200,255,.05)' }}>👁 Ver página pública</a>
           </div>
         </div>
+
+        {qr.verification_code && (
+          <div style={{ background: '#0d1a20', borderRadius: '20px', padding: '24px 32px', border: '1px solid rgba(0,200,255,.15)', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '16px' }}>
+            <div style={{ fontSize: '28px' }}>🔒</div>
+            <div style={{ flex: 1 }}>
+              <div style={{ fontSize: '10px', color: '#6a8a95', textTransform: 'uppercase', letterSpacing: '.12em', marginBottom: '4px', fontWeight: 600 }}>Código de verificación (solo visible para ti)</div>
+              <div style={{ fontSize: '20px', color: '#00c8ff', fontWeight: 800, letterSpacing: '.15em', fontFamily: 'monospace' }}>{qr.verification_code}</div>
+            </div>
+          </div>
+        )}
+
         <div style={{ background: '#0d1a20', borderRadius: '20px', padding: '32px', border: '1px solid rgba(0,200,255,.1)' }}>
           <div style={{ fontSize: '11px', fontWeight: 700, color: '#00c8ff', textTransform: 'uppercase', letterSpacing: '.12em', marginBottom: '20px' }}>Datos del objeto</div>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
