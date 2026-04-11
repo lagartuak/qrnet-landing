@@ -27,7 +27,7 @@ const tipos = [
     titulo: 'Vehículo',
     desc: 'Identificación de propietario, datos del seguro y cambio de titularidad verificado.',
     tags: ['Antirrobo', 'Seguro', 'Titularidad'],
-    activo: false,
+    activo: true,
   },
   {
     slug: 'bicicleta',

@@ -1,6 +1,7 @@
 import { notFound } from 'next/navigation';
 import pool from '@/lib/db';
 import './qr-public.css';
+import ContactForm from './ContactForm';
 
 interface Props {
   params: Promise<{ codigo: string }>;
@@ -40,6 +41,54 @@ export default async function QRPublicPage({ params }: Props) {
     [qr.id]
   ).catch(() => {});
 
+  // --- VEHÍCULO ---
+  if (qr.object_type === 'vehiculo') {
+    return (
+      <div className="qr-page">
+        <div className="qr-topbar">
+          <span className="qr-brand">🚗 QRnet · Vehículo</span>
+          <span className="qr-badge">Contacto anónimo</span>
+        </div>
+
+        <div className="qr-card">
+          <div className="qr-card-header">
+            <div className="qr-estab-row">
+              <div className="qr-estab-icon">🚗</div>
+              <div>
+                <div className="qr-sublabel">Vehículo registrado</div>
+                <div className="qr-estab-name">
+                  {data.marca} {data.modelo}
+                  {data.color ? ` · ${data.color}` : ''}
+                </div>
+              </div>
+            </div>
+            <div className="qr-status-pill">
+              <div className="qr-status-dot" />
+              QR verificado · {qr.public_code}
+            </div>
+          </div>
+
+          <div className="qr-body">
+            <div className="qr-section-title">¿Necesitas contactar con el propietario?</div>
+            <p style={{ color: '#9C8672', fontSize: '14px', lineHeight: '1.6', marginBottom: '24px' }}>
+              Selecciona el motivo y envía un aviso. El propietario recibirá una
+              notificación al instante. <strong>Tus datos no serán compartidos.</strong>
+            </p>
+
+            <ContactForm qrId={qr.id} matricula={data.matricula || ''} />
+          </div>
+        </div>
+
+        <div className="qr-footer">
+          <span>Servicio de contacto anónimo</span>
+          <span className="qr-footer-logo">QRnet.io</span>
+          <a href="https://qrnet.io" target="_blank" rel="noreferrer">qrnet.io</a>
+        </div>
+      </div>
+    );
+  }
+
+  // --- MÁQUINAS (código original) ---
   const waTel = (data.tel_resp || '').replace(/\D/g, '');
   const waTxt = encodeURIComponent(
     `🚨 *INCIDENCIA ${data.tipo_maquina === 'vending' ? 'MÁQUINA VENDING' : 'MÁQUINA DE TABACO'}*\n\n` +
