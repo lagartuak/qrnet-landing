@@ -37,7 +37,8 @@ export async function POST(req: NextRequest) {
     const accountSid = process.env.TWILIO_ACCOUNT_SID;
     const authToken = process.env.TWILIO_AUTH_TOKEN;
     const messagingSid = process.env.TWILIO_MESSAGING_SID;
-
+console.log('SID:', process.env.TWILIO_ACCOUNT_SID);
+console.log('SID:', process.env.TWILIO_ACCOUNT_SID);
     const params = new URLSearchParams();
     params.append('To', telLimpio);
     params.append('MessagingServiceSid', messagingSid || '');
