@@ -4,7 +4,7 @@ import './qr-public.css';
 import ContactForm from './ContactForm';
 
 interface Props {
-  params: { codigo: string };
+  params: Promise<{ codigo: string }>;
 }
 
 function pvrStatus(fecha: string | null) {
@@ -18,7 +18,8 @@ function pvrStatus(fecha: string | null) {
 }
 
 export default async function QRPublicPage({ params }: Props) {
-  const codigo = params.codigo.toUpperCase();
+  const { codigo: codigoRaw } = await params;
+  const codigo = codigoRaw.toUpperCase();
 
   const [rows]: any = await pool.query(
     `SELECT qr_codes.*, users.name as owner_name
