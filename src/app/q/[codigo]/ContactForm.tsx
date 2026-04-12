@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 
-const MOTIVOS = [
+const MOTIVOS_VEHICULO = [
   { valor: 'luces', emoji: '💡', label: 'Luces encendidas' },
   { valor: 'golpe', emoji: '💥', label: 'Golpe / Accidente' },
   { valor: 'mal_aparcado', emoji: '🅿️', label: 'Mal aparcado / Bloqueando' },
@@ -12,7 +12,18 @@ const MOTIVOS = [
   { valor: 'otro', emoji: '📋', label: 'Otro motivo' },
 ];
 
-export default function ContactForm({ qrId, matricula }: { qrId: number; matricula: string }) {
+const MOTIVOS_BICICLETA = [
+  { valor: 'encontrada', emoji: '🔍', label: 'Bicicleta/patinete encontrado' },
+  { valor: 'accidente', emoji: '🚑', label: 'Accidente del propietario' },
+  { valor: 'danio', emoji: '💥', label: 'Dañado por otro vehículo' },
+  { valor: 'mal_aparcado', emoji: '🅿️', label: 'Mal aparcado / Bloqueando' },
+  { valor: 'robo_intento', emoji: '🔒', label: 'Intento de robo detectado' },
+  { valor: 'candado', emoji: '🔓', label: 'Candado roto / abierto' },
+  { valor: 'otro', emoji: '📋', label: 'Otro motivo' },
+];
+
+export default function ContactForm({ qrId, matricula, tipo = 'vehiculo' }: { qrId: number; matricula: string; tipo?: string }) {
+  const MOTIVOS = tipo === 'bicicleta' ? MOTIVOS_BICICLETA : MOTIVOS_VEHICULO;
   const [motivo, setMotivo] = useState('');
   const [mensaje, setMensaje] = useState('');
   const [enviado, setEnviado] = useState(false);

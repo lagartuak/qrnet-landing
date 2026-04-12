@@ -125,7 +125,7 @@ export default async function QRPublicPage({ params }: Props) {
               notificación al instante. <strong>Tus datos no serán compartidos.</strong>
             </p>
 
-            <ContactForm qrId={qr.id} matricula={data.num_serie || ''} />
+           <ContactForm qrId={qr.id} matricula={data.num_serie || ''} tipo="bicicleta" />
           </div>
         </div>
 
