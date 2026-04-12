@@ -4,7 +4,7 @@ import './qr-public.css';
 import ContactForm from './ContactForm';
 
 interface Props {
-  params: { codigo: string };
+  params: Promise<{ codigo: string }>;
 }
 
 function pvrStatus(fecha: string | null) {
@@ -18,7 +18,8 @@ function pvrStatus(fecha: string | null) {
 }
 
 export default async function QRPublicPage({ params }: Props) {
-  const codigo = params.codigo.toUpperCase();
+  const { codigo: codigoRaw } = await params;
+  const codigo = codigoRaw.toUpperCase();
 
   const [rows]: any = await pool.query(
     `SELECT qr_codes.*, users.name as owner_name
@@ -86,7 +87,56 @@ export default async function QRPublicPage({ params }: Props) {
       </div>
     );
   }
+// --- BICICLETA / PATINETE ---
+  if (qr.object_type === 'bicicleta') {
+    const tipoLabel = data.tipo === 'ebike' ? '⚡ E-Bike' 
+      : data.tipo === 'patinete' ? '🛴 Patinete eléctrico' 
+      : '🚲 Bicicleta';
 
+    return (
+      <div className="qr-page">
+        <div className="qr-topbar">
+          <span className="qr-brand">{tipoLabel} · QRnet</span>
+          <span className="qr-badge">Contacto anónimo</span>
+        </div>
+
+        <div className="qr-card">
+          <div className="qr-card-header">
+            <div className="qr-estab-row">
+              <div className="qr-estab-icon">{data.tipo === 'patinete' ? '🛴' : '🚲'}</div>
+              <div>
+                <div className="qr-sublabel">Registrado en QRnet</div>
+                <div className="qr-estab-name">
+                  {data.marca} {data.modelo}
+                  {data.color ? ` · ${data.color}` : ''}
+                </div>
+              </div>
+            </div>
+            <div className="qr-status-pill">
+              <div className="qr-status-dot" />
+              QR verificado · {qr.public_code}
+            </div>
+          </div>
+
+          <div className="qr-body">
+            <div className="qr-section-title">¿Necesitas contactar con el propietario?</div>
+            <p style={{ color: '#9C8672', fontSize: '14px', lineHeight: '1.6', marginBottom: '24px' }}>
+              Selecciona el motivo y envía un aviso. El propietario recibirá una
+              notificación al instante. <strong>Tus datos no serán compartidos.</strong>
+            </p>
+
+            <ContactForm qrId={qr.id} matricula={data.num_serie || ''} />
+          </div>
+        </div>
+
+        <div className="qr-footer">
+          <span>Servicio de contacto anónimo</span>
+          <span className="qr-footer-logo">QRnet.io</span>
+          <a href="https://qrnet.io" target="_blank" rel="noreferrer">qrnet.io</a>
+        </div>
+      </div>
+    );
+  }
   // --- MÁQUINAS (código original) ---
   const waTel = (data.tel_resp || '').replace(/\D/g, '');
   const waTxt = encodeURIComponent(

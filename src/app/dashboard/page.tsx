@@ -49,11 +49,17 @@ export default async function DashboardPage() {
               Plan {plan.toUpperCase()} · {qrCount}/{qrLimit} QRs usados
             </p>
           </div>
-          {qrCount < qrLimit && (
-            <a href="/dashboard/crear" style={{ background: '#00c8ff', color: '#000', padding: '12px 24px', borderRadius: '40px', fontWeight: 700, fontSize: '14px', textDecoration: 'none' }}>
-              + Nuevo QR
-            </a>
-          )}
+         {qrCount < qrLimit && (
+  <div style={{ display: 'flex', gap: '12px' }}>
+    <a href="/" style={{ border: '1px solid rgba(0,200,255,.2)', color: '#00c8ff', padding: '12px 24px', borderRadius: '40px', fontWeight: 700, fontSize: '14px', textDecoration: 'none' }}>
+      ← Inicio
+    </a>
+    <a href="/dashboard/crear" style={{ background: '#00c8ff', color: '#000', padding: '12px 24px', borderRadius: '40px', fontWeight: 700, fontSize: '14px', textDecoration: 'none' }}>
+      + Nuevo QR
+    </a>
+  </div>
+)}
+      
           {qrCount >= qrLimit && plan === 'free' && (
             <a href="/#precios" style={{ background: '#ff6b35', color: '#fff', padding: '12px 24px', borderRadius: '40px', fontWeight: 700, fontSize: '14px', textDecoration: 'none' }}>
               Actualizar a Pro
