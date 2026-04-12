@@ -259,6 +259,12 @@ export default function RegisterPage() {
         <button type="submit" disabled={loading} style={{ background: '#00c8ff', color: '#000', border: 'none', padding: '14px', borderRadius: '40px', fontWeight: 700, fontSize: '14px', cursor: 'pointer' }}>
           {loading ? 'Creando cuenta...' : 'Crear cuenta gratis'}
         </button>
+      <p style={{ color: '#6a8a95', fontSize: '13px', textAlign: 'center', marginTop: '8px' }}>
+  ¿Ya tienes cuenta?{' '}
+  <a href="/login" style={{ color: '#00c8ff', textDecoration: 'none', fontWeight: 600 }}>
+    Iniciar sesión
+  </a>
+</p>
       </form>
     </main>
   )
