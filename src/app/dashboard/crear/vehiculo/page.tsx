@@ -15,6 +15,19 @@ const TIPOS_VEHICULO = [
   { valor: 'otro', emoji: '🚙', label: 'Otro' },
 ];
 
+const PREFIJOS = [
+  { code: '+34', pais: '🇪🇸 España' },
+  { code: '+33', pais: '🇫🇷 Francia' },
+  { code: '+351', pais: '🇵🇹 Portugal' },
+  { code: '+44', pais: '🇬🇧 Reino Unido' },
+  { code: '+49', pais: '🇩🇪 Alemania' },
+  { code: '+39', pais: '🇮🇹 Italia' },
+  { code: '+31', pais: '🇳🇱 Países Bajos' },
+  { code: '+32', pais: '🇧🇪 Bélgica' },
+  { code: '+41', pais: '🇨🇭 Suiza' },
+  { code: '+1', pais: '🇺🇸 EE.UU.' },
+];
+
 export default function VehiculoPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
@@ -28,6 +41,7 @@ export default function VehiculoPage() {
     color: '',
     anio: '',
     num_bastidor: '',
+    prefijo_tel: '+34',
     tel_propietario: '',
     email_propietario: '',
     aseguradora: '',
@@ -74,7 +88,11 @@ export default function VehiculoPage() {
         body: JSON.stringify({
           object_type: 'vehiculo',
           title: `${tipoLabel} · ${form.marca} ${form.modelo} · ${form.matricula}`,
-          object_data: { ...form, object_type: 'vehiculo' },
+          object_data: {
+            ...form,
+            tel_propietario: form.prefijo_tel + form.tel_propietario.replace(/\s/g, ''),
+            object_type: 'vehiculo',
+          },
         }),
       });
       const data = await res.json();
@@ -181,9 +199,28 @@ export default function VehiculoPage() {
           <div className="form-grid">
             <div className="form-field">
               <label>Teléfono del propietario <span className="req">*</span></label>
-              <input type="tel" placeholder="+34 600 000 000"
-                value={form.tel_propietario} style={inputStyle('tel_propietario')}
-                onChange={e => set('tel_propietario', e.target.value)} />
+              <div style={{ display: 'flex', gap: '8px' }}>
+                <select
+                  value={form.prefijo_tel}
+                  onChange={e => set('prefijo_tel', e.target.value)}
+                  style={{
+                    width: '130px',
+                    padding: '10px 8px',
+                    borderRadius: '10px',
+                    border: '1px solid var(--border)',
+                    background: 'rgba(255,255,255,.03)',
+                    color: '#f0f8ff',
+                    fontSize: '13px',
+                  }}
+                >
+                  {PREFIJOS.map(p => (
+                    <option key={p.code} value={p.code}>{p.pais} {p.code}</option>
+                  ))}
+                </select>
+                <input type="tel" placeholder="600 000 000"
+                  value={form.tel_propietario} style={{ ...inputStyle('tel_propietario'), flex: 1 }}
+                  onChange={e => set('tel_propietario', e.target.value)} />
+              </div>
               <span className="form-hint">Recibirás las notificaciones en este número (SMS/WhatsApp)</span>
             </div>
             <div className="form-field">
