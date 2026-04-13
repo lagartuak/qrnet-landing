@@ -68,7 +68,7 @@ export default function HomePage() {
       {/* ── NAV ── */}
       <nav ref={navRef}>
         <Link href="/" className="nav-logo">
-          <div className="dot" />
+          <img src="/logo.png" alt="QRnet.io" style={{width:36,height:36}} />
           QRnet<span style={{ color: 'var(--cyan)' }}>.</span>io
         </Link>
         <ul className="nav-links">
@@ -441,7 +441,7 @@ export default function HomePage() {
       <footer>
         <div className="footer-inner">
           <Link href="/" className="footer-logo">
-            <div className="dot" />
+            <img src="/logo.png" alt="QRnet.io" style={{width:36,height:36}} />
             QRnet<span style={{ color: 'var(--cyan)' }}>.</span>io
           </Link>
           <ul className="footer-links">

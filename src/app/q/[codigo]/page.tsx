@@ -81,7 +81,7 @@ export default async function QRPublicPage({ params }: Props) {
 
         <div className="qr-footer">
           <span>Servicio de contacto anónimo</span>
-          <span className="qr-footer-logo" style={{display:"flex",alignItems:"center",gap:"8px"}}><img src="/logo.png" alt="QRnet.io" style={{width:22,height:22}} />QRnet.io</span>
+          <span className="qr-footer-logo" style={{display:"flex",alignItems:"center",gap:"8px"}}><img src="/logo.png" alt="QRnet.io" style={{width:36,height:36}} />QRnet.io</span>
           <a href="https://qrnet.io" target="_blank" rel="noreferrer">qrnet.io</a>
         </div>
       </div>
@@ -131,7 +131,7 @@ export default async function QRPublicPage({ params }: Props) {
 
         <div className="qr-footer">
           <span>Servicio de contacto anónimo</span>
-          <span className="qr-footer-logo" style={{display:"flex",alignItems:"center",gap:"8px"}}><img src="/logo.png" alt="QRnet.io" style={{width:22,height:22}} />QRnet.io</span>
+          <span className="qr-footer-logo" style={{display:"flex",alignItems:"center",gap:"8px"}}><img src="/logo.png" alt="QRnet.io" style={{width:36,height:36}} />QRnet.io</span>
           <a href="https://qrnet.io" target="_blank" rel="noreferrer">qrnet.io</a>
         </div>
       </div>
@@ -177,7 +177,7 @@ export default async function QRPublicPage({ params }: Props) {
         </div>
         <div className="qr-footer">
           <span>Servicio de contacto anónimo</span>
-          <span className="qr-footer-logo" style={{display:"flex",alignItems:"center",gap:"8px"}}><img src="/logo.png" alt="QRnet.io" style={{width:22,height:22}} />QRnet.io</span>
+          <span className="qr-footer-logo" style={{display:"flex",alignItems:"center",gap:"8px"}}><img src="/logo.png" alt="QRnet.io" style={{width:36,height:36}} />QRnet.io</span>
           <a href="https://qrnet.io" target="_blank" rel="noreferrer">qrnet.io</a>
         </div>
       </div>
@@ -297,7 +297,7 @@ export default async function QRPublicPage({ params }: Props) {
 
         <div className="qr-footer">
           <span>Perfil privado verificado</span>
-          <span className="qr-footer-logo" style={{display:"flex",alignItems:"center",gap:"8px"}}><img src="/logo.png" alt="QRnet.io" style={{width:22,height:22}} />QRnet.io</span>
+          <span className="qr-footer-logo" style={{display:"flex",alignItems:"center",gap:"8px"}}><img src="/logo.png" alt="QRnet.io" style={{width:36,height:36}} />QRnet.io</span>
           <a href="https://qrnet.io" target="_blank" rel="noreferrer">qrnet.io</a>
         </div>
       </div>
