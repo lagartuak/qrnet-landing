@@ -23,7 +23,7 @@ const MOTIVOS_BICICLETA = [
 ];
 
 export default function ContactForm({ qrId, matricula, tipo = 'vehiculo' }: { qrId: number; matricula: string; tipo?: string }) {
-  const MOTIVOS = tipo === 'bicicleta' ? MOTIVOS_BICICLETA : MOTIVOS_VEHICULO;
+  const MOTIVOS = tipo === 'personal' ? [] : tipo === 'bicicleta' ? MOTIVOS_BICICLETA : MOTIVOS_VEHICULO;
   const [motivo, setMotivo] = useState('');
   const [mensaje, setMensaje] = useState('');
   const [enviado, setEnviado] = useState(false);
@@ -31,15 +31,15 @@ export default function ContactForm({ qrId, matricula, tipo = 'vehiculo' }: { qr
   const [error, setError] = useState('');
 
   const handleSubmit = async () => {
-    if (!motivo) {
+    if (tipo !== "personal" && !motivo) {
       setError('Selecciona un motivo');
       return;
     }
     setLoading(true);
     setError('');
     try {
-      const motivoLabel = MOTIVOS.find(m => m.valor === motivo)?.label || motivo;
-      const res = await fetch('/api/qr/notify', {
+      const motivoLabel = tipo === 'personal' ? 'Mensaje privado' : (MOTIVOS.find(m => m.valor === motivo)?.label || motivo);
+      const res = await fetch(tipo === 'personal' ? '/api/qr/message' : '/api/qr/notify', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ qr_id: qrId, motivo: motivoLabel, mensaje }),
@@ -60,8 +60,8 @@ export default function ContactForm({ qrId, matricula, tipo = 'vehiculo' }: { qr
     return (
       <div style={{ textAlign: 'center', padding: '32px 0' }}>
         <div style={{ fontSize: '48px', marginBottom: '16px' }}>✅</div>
-        <h3 style={{ color: '#f0f8ff', fontSize: '18px', marginBottom: '8px' }}>Aviso enviado</h3>
-        <p style={{ color: '#9C8672', fontSize: '14px' }}>
+        <h3 style={{ color: '#1a1a1a', fontSize: '18px', marginBottom: '8px' }}>Aviso enviado</h3>
+        <p style={{ color: '#666', fontSize: '14px' }}>
           El propietario ha sido notificado al instante.<br />
           No se han compartido tus datos personales.
         </p>
@@ -110,7 +110,7 @@ export default function ContactForm({ qrId, matricula, tipo = 'vehiculo' }: { qr
           borderRadius: '12px',
           padding: '12px 16px',
           fontSize: '14px',
-          color: '#f0f8ff',
+          color: '#1a1a1a',
           outline: 'none',
           resize: 'none',
           marginBottom: '16px',
@@ -140,7 +140,7 @@ export default function ContactForm({ qrId, matricula, tipo = 'vehiculo' }: { qr
           opacity: loading ? .7 : 1,
         }}
       >
-        {loading ? 'Enviando...' : '📲 Enviar aviso al propietario'}
+        {loading ? 'Enviando...' : tipo === 'personal' ? '💬 Enviar mensaje privado' : '📲 Enviar aviso al propietario'}
       </button>
 
       <p style={{ color: '#9C8672', fontSize: '12px', textAlign: 'center', marginTop: '12px', lineHeight: '1.5' }}>

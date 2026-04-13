@@ -19,8 +19,11 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           [credentials.email]
         )
         const user = rows[0]
+        console.log("LOGIN - user found:", !!user, "email:", credentials.email)
         if (!user) return null
-        if (user.status === 'pending') return null
+        console.log("LOGIN - status:", user.status, "has password:", !!user.password_hash)
+        if (user.status === "pending") return null
+        console.log("LOGIN - checking password")
         const valid = await bcrypt.compare(credentials.password as string, user.password_hash)
         if (!valid) return null
         return { id: user.id, email: user.email, name: user.name }

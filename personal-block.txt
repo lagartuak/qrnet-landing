@@ -1,0 +1,119 @@
+
+  // --- QR PERSONAL ---
+  if (qr.object_type === 'personal') {
+    const v = data.visible || {};
+
+    return (
+      <div className="qr-page">
+        <div className="qr-topbar">
+          <span className="qr-brand">👤 QRnet · Personal</span>
+          <span className="qr-badge">Perfil privado</span>
+        </div>
+
+        <div className="qr-card">
+          <div className="qr-card-header">
+            <div className="qr-estab-row">
+              <div className="qr-estab-icon" style={{fontSize:'32px'}}>👤</div>
+              <div>
+                <div className="qr-estab-name">{data.nombre}</div>
+                <div className="qr-sublabel" style={{color:'#00c8ff'}}>@{data.username}</div>
+              </div>
+            </div>
+            {v.profesion && data.profesion && (
+              <div style={{color:'#9C8672',fontSize:'13px',marginTop:'8px'}}>{data.profesion}</div>
+            )}
+            {v.ciudad && data.ciudad && (
+              <div className="qr-addr">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2">
+                  <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+                  <circle cx="12" cy="10" r="3"/>
+                </svg>
+                <span>{data.ciudad}</span>
+              </div>
+            )}
+            <div className="qr-status-pill">
+              <div className="qr-status-dot" />
+              QR verificado · {qr.public_code}
+            </div>
+          </div>
+
+          <div className="qr-body">
+            {v.bio && data.bio && (
+              <>
+                <div className="qr-section-title">Sobre mí</div>
+                <p style={{color:'#c8dde5',fontSize:'14px',lineHeight:'1.6',marginBottom:'24px'}}>{data.bio}</p>
+              </>
+            )}
+
+            {(v.telefono && data.telefono) || (v.email && data.email) || (v.web && data.web) ? (
+              <>
+                <div className="qr-section-title">Contacto</div>
+                <div className="qr-info-grid">
+                  {v.telefono && data.telefono && (
+                    <div className="qr-info-item">
+                      <div className="qr-ikey">Teléfono</div>
+                      <div className="qr-ival"><a href={`tel:${data.telefono}`} style={{color:'#00c8ff',textDecoration:'none'}}>{data.telefono}</a></div>
+                    </div>
+                  )}
+                  {v.email && data.email && (
+                    <div className="qr-info-item">
+                      <div className="qr-ikey">Email</div>
+                      <div className="qr-ival"><a href={`mailto:${data.email}`} style={{color:'#00c8ff',textDecoration:'none'}}>{data.email}</a></div>
+                    </div>
+                  )}
+                  {v.web && data.web && (
+                    <div className="qr-info-item">
+                      <div className="qr-ikey">Web</div>
+                      <div className="qr-ival"><a href={data.web} target="_blank" rel="noreferrer" style={{color:'#00c8ff',textDecoration:'none'}}>{data.web.replace('https://','').replace('http://','')}</a></div>
+                    </div>
+                  )}
+                </div>
+              </>
+            ) : null}
+
+            {((v.linkedin && data.linkedin) || (v.instagram && data.instagram) || (v.facebook && data.facebook) || (v.twitter && data.twitter) || (v.tiktok && data.tiktok) || (v.youtube && data.youtube)) && (
+              <>
+                <div className="qr-divider" />
+                <div className="qr-section-title">Redes sociales</div>
+                <div style={{display:'flex',flexWrap:'wrap',gap:'10px',marginTop:'12px'}}>
+                  {v.linkedin && data.linkedin && (
+                    <a href={data.linkedin} target="_blank" rel="noreferrer" style={{background:'rgba(0,119,181,.15)',color:'#0077b5',padding:'10px 16px',borderRadius:'10px',fontSize:'13px',fontWeight:600,textDecoration:'none'}}>LinkedIn</a>
+                  )}
+                  {v.instagram && data.instagram && (
+                    <a href={`https://instagram.com/${data.instagram.replace('@','')}`} target="_blank" rel="noreferrer" style={{background:'rgba(225,48,108,.15)',color:'#e1306c',padding:'10px 16px',borderRadius:'10px',fontSize:'13px',fontWeight:600,textDecoration:'none'}}>Instagram</a>
+                  )}
+                  {v.facebook && data.facebook && (
+                    <a href={data.facebook} target="_blank" rel="noreferrer" style={{background:'rgba(24,119,242,.15)',color:'#1877f2',padding:'10px 16px',borderRadius:'10px',fontSize:'13px',fontWeight:600,textDecoration:'none'}}>Facebook</a>
+                  )}
+                  {v.twitter && data.twitter && (
+                    <a href={`https://x.com/${data.twitter.replace('@','')}`} target="_blank" rel="noreferrer" style={{background:'rgba(255,255,255,.1)',color:'#f0f8ff',padding:'10px 16px',borderRadius:'10px',fontSize:'13px',fontWeight:600,textDecoration:'none'}}>X / Twitter</a>
+                  )}
+                  {v.tiktok && data.tiktok && (
+                    <a href={`https://tiktok.com/@${data.tiktok.replace('@','')}`} target="_blank" rel="noreferrer" style={{background:'rgba(255,0,80,.15)',color:'#ff0050',padding:'10px 16px',borderRadius:'10px',fontSize:'13px',fontWeight:600,textDecoration:'none'}}>TikTok</a>
+                  )}
+                  {v.youtube && data.youtube && (
+                    <a href={data.youtube} target="_blank" rel="noreferrer" style={{background:'rgba(255,0,0,.15)',color:'#ff0000',padding:'10px 16px',borderRadius:'10px',fontSize:'13px',fontWeight:600,textDecoration:'none'}}>YouTube</a>
+                  )}
+                </div>
+              </>
+            )}
+
+            <div className="qr-divider" />
+
+            <div className="qr-section-title">💬 Enviar mensaje privado</div>
+            <p style={{color:'#9C8672',fontSize:'13px',lineHeight:'1.6',marginBottom:'16px'}}>
+              Envía un mensaje a <strong style={{color:'#f0f8ff'}}>{data.nombre}</strong> sin revelar tus datos personales.
+              Recibirá tu mensaje de forma anónima.
+            </p>
+            <ContactForm qrId={qr.id} matricula="" tipo="personal" />
+          </div>
+        </div>
+
+        <div className="qr-footer">
+          <span>Perfil privado verificado</span>
+          <span className="qr-footer-logo">QRnet.io</span>
+          <a href="https://qrnet.io" target="_blank" rel="noreferrer">qrnet.io</a>
+        </div>
+      </div>
+    );
+  }

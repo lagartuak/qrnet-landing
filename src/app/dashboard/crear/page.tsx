@@ -38,6 +38,22 @@ const tipos = [
   activo: true,
 },
   {
+    slug: 'empresa',
+    emoji: '🏢',
+    titulo: 'Empresa / Autónomo',
+    desc: 'Tarjeta digital profesional con todos tus datos de contacto, web y redes sociales.',
+    tags: ['Tarjeta digital', 'Redes sociales', 'Web'],
+    activo: true,
+  },
+  {
+    slug: 'personal',
+    emoji: '👤',
+    titulo: 'QR Personal',
+    desc: 'Tu perfil privado con control total. Comparte solo lo que quieras. Mensajería anónima incluida.',
+    tags: ['Privacidad', 'Mensajería', 'Control total'],
+    activo: true,
+  },
+  {
     slug: 'mascota',
     emoji: '🐾',
     titulo: 'Mascota',
