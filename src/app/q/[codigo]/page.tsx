@@ -304,6 +304,144 @@ export default async function QRPublicPage({ params }: Props) {
     );
   }
 
+
+  // --- MASCOTA ---
+  if (qr.object_type === 'mascota') {
+    const tipoEmoji = data.tipo_mascota === 'gato' ? '🐈' 
+      : data.tipo_mascota === 'ave' ? '🦜'
+      : data.tipo_mascota === 'conejo' ? '🐇'
+      : '🐕';
+
+    return (
+      <div className="qr-page">
+        <div className="qr-topbar">
+          <span className="qr-brand">{tipoEmoji} QRnet · Mascota</span>
+          <span className="qr-badge">Contacto inmediato</span>
+        </div>
+
+        <div className="qr-card">
+          <div className="qr-card-header">
+            <div className="qr-estab-row">
+              <div className="qr-estab-icon" style={{fontSize:'32px'}}>{tipoEmoji}</div>
+              <div>
+                <div className="qr-sublabel">{data.raza || 'Mascota registrada'}</div>
+                <div className="qr-estab-name">{data.nombre}</div>
+              </div>
+            </div>
+            {data.ciudad && (
+              <div className="qr-addr">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2">
+                  <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+                  <circle cx="12" cy="10" r="3"/>
+                </svg>
+                <span>{data.ciudad}</span>
+              </div>
+            )}
+            <div className="qr-status-pill">
+              <div className="qr-status-dot" />
+              QR verificado · {qr.public_code}
+            </div>
+          </div>
+
+          <div className="qr-body">
+            <div className="qr-section-title">Datos de la mascota</div>
+            <div className="qr-info-grid">
+              {data.color && (
+                <div className="qr-info-item">
+                  <div className="qr-ikey">Color</div>
+                  <div className="qr-ival">{data.color}</div>
+                </div>
+              )}
+              {data.sexo && (
+                <div className="qr-info-item">
+                  <div className="qr-ikey">Sexo</div>
+                  <div className="qr-ival">{data.sexo === 'Macho' ? '♂️' : '♀️'} {data.sexo}</div>
+                </div>
+              )}
+              {data.edad && (
+                <div className="qr-info-item">
+                  <div className="qr-ikey">Edad</div>
+                  <div className="qr-ival">{data.edad}</div>
+                </div>
+              )}
+              {data.peso && (
+                <div className="qr-info-item">
+                  <div className="qr-ikey">Peso</div>
+                  <div className="qr-ival">{data.peso}</div>
+                </div>
+              )}
+              {data.microchip && (
+                <div className="qr-info-item full">
+                  <div className="qr-ikey">Nº Microchip</div>
+                  <div className="qr-ival">{data.microchip}</div>
+                </div>
+              )}
+            </div>
+
+            {(data.alergias || data.medicacion || data.vacunas_dia) && (
+              <>
+                <div className="qr-divider" />
+                <div className="qr-section-title">Salud</div>
+                <div className="qr-info-grid">
+                  <div className="qr-info-item">
+                    <div className="qr-ikey">Vacunas al día</div>
+                    <div className="qr-ival">{data.vacunas_dia === 'si' ? '✅ Sí' : '❌ No'}</div>
+                  </div>
+                  {data.alergias && (
+                    <div className="qr-info-item">
+                      <div className="qr-ikey">⚠️ Alergias</div>
+                      <div className="qr-ival" style={{color:'#ff6b35'}}>{data.alergias}</div>
+                    </div>
+                  )}
+                  {data.medicacion && (
+                    <div className="qr-info-item full">
+                      <div className="qr-ikey">💊 Medicación</div>
+                      <div className="qr-ival">{data.medicacion}</div>
+                    </div>
+                  )}
+                </div>
+              </>
+            )}
+
+            {data.veterinario && (
+              <>
+                <div className="qr-divider" />
+                <div className="qr-section-title">Veterinario</div>
+                <div className="qr-info-grid">
+                  <div className="qr-info-item">
+                    <div className="qr-ikey">Clínica</div>
+                    <div className="qr-ival">{data.veterinario}</div>
+                  </div>
+                  {data.tel_veterinario && (
+                    <div className="qr-info-item">
+                      <div className="qr-ikey">Teléfono</div>
+                      <div className="qr-ival"><a href={`tel:${data.tel_veterinario}`} style={{color:'#00c8ff',textDecoration:'none'}}>{data.tel_veterinario}</a></div>
+                    </div>
+                  )}
+                </div>
+              </>
+            )}
+
+            <div className="qr-divider" />
+
+            <div className="qr-section-title">¿Has encontrado a esta mascota?</div>
+            <p style={{ color: '#9C8672', fontSize: '14px', lineHeight: '1.6', marginBottom: '24px' }}>
+              Selecciona el motivo y avisa al propietario. Recibirá una
+              notificación al instante. <strong>Tus datos no serán compartidos.</strong>
+            </p>
+
+            <ContactForm qrId={qr.id} matricula={data.microchip || ''} tipo="mascota" />
+          </div>
+        </div>
+
+        <div className="qr-footer">
+          <span>Servicio de contacto inmediato</span>
+          <span className="qr-footer-logo" style={{display:"flex",alignItems:"center",gap:"8px"}}><img src="/logo.png" alt="QRnet.io" style={{width:22,height:22}} />QRnet.io</span>
+          <a href="https://qrnet.io" target="_blank" rel="noreferrer">qrnet.io</a>
+        </div>
+      </div>
+    );
+  }
   // --- MÁQUINAS (código original) ---
   const waTel = (data.tel_resp || '').replace(/\D/g, '');
   const waTxt = encodeURIComponent(

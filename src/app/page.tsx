@@ -456,7 +456,7 @@ export default function HomePage() {
         </div>
         <div className="footer-copy">
           © 2026 QRnet.io · Desarrollado por{' '}
-          <a href="https://www.maquinasdetabaco.com" style={{ color: 'var(--cyan)', textDecoration: 'none' }}>NVM · New Vending Machines</a>
+          <a href="mailto:info@qrnet.io" style={{ color: 'var(--cyan)', textDecoration: 'none' }}>info@qrnet.io</a>
           {' '}· Tudela, Navarra
         </div>
       </footer>

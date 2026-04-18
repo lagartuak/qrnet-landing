@@ -1,16 +1,21 @@
 import { NextRequest, NextResponse } from 'next/server';
 import pool from '@/lib/db';
+import { Resend } from 'resend';
+
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 export async function POST(req: NextRequest) {
   try {
     const { qr_id, motivo, mensaje } = await req.json();
-
     if (!qr_id || !motivo) {
       return NextResponse.json({ error: 'Datos incompletos' }, { status: 400 });
     }
 
     const [rows]: any = await pool.query(
-      'SELECT * FROM qr_codes WHERE id = ? AND is_active = 1',
+      `SELECT qr_codes.*, users.email as owner_email, users.name as owner_name
+       FROM qr_codes
+       LEFT JOIN users ON qr_codes.user_id = users.id
+       WHERE qr_codes.id = ? AND qr_codes.is_active = 1`,
       [qr_id]
     );
 
@@ -20,52 +25,73 @@ export async function POST(req: NextRequest) {
 
     const qr = rows[0];
     const data = typeof qr.object_data === 'string' ? JSON.parse(qr.object_data) : qr.object_data;
-    const tel = data.tel_propietario || data.tel_resp;
 
-    if (!tel) {
-      return NextResponse.json({ error: 'No hay teléfono registrado' }, { status: 400 });
+    // Buscar email del propietario (del usuario o del objeto)
+    const ownerEmail = qr.owner_email || data.email_propietario || data.email;
+
+    if (!ownerEmail) {
+      return NextResponse.json({ error: 'No se puede contactar con el propietario' }, { status: 400 });
     }
 
-    const telLimpio = tel.replace(/\s/g, '');
-    const smsBody =
-      `🚗 AVISO QRnet.io\n` +
-      `Vehículo: ${data.marca || ''} ${data.modelo || ''} · ${data.matricula || qr.public_code}\n` +
-      `Motivo: ${motivo}\n` +
-      (mensaje ? `Mensaje: ${mensaje}\n` : '') +
-      `\nNadie ha visto tus datos personales.`;
+    // Determinar tipo de objeto para el email
+    const tipoEmoji = qr.object_type === 'vehiculo' ? '🚗' 
+      : qr.object_type === 'bicicleta' ? '🚲' 
+      : qr.object_type === 'empresa' ? '🏢'
+      : '📱';
 
-    const accountSid = process.env.TWILIO_ACCOUNT_SID;
-    const authToken = process.env.TWILIO_AUTH_TOKEN;
-    const messagingSid = process.env.TWILIO_MESSAGING_SID;
-console.log('SID:', process.env.TWILIO_ACCOUNT_SID);
-console.log('SID:', process.env.TWILIO_ACCOUNT_SID);
-    const params = new URLSearchParams();
-    params.append('To', telLimpio);
-    params.append('MessagingServiceSid', messagingSid || '');
-    params.append('Body', smsBody);
+    const tipoLabel = qr.object_type === 'vehiculo' ? 'Vehículo' 
+      : qr.object_type === 'bicicleta' ? 'Bicicleta / Patinete' 
+      : qr.object_type === 'empresa' ? 'Empresa'
+      : 'QR';
 
-    const twilioRes = await fetch(
-      `https://api.twilio.com/2010-04-01/Accounts/${accountSid}/Messages.json`,
-      {
-        method: 'POST',
-        headers: {
-          'Authorization': 'Basic ' + Buffer.from(`${accountSid}:${authToken}`).toString('base64'),
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
-        body: params.toString(),
-      }
-    );
+    const identificador = data.matricula || data.num_serie || data.nombre_comercial || qr.public_code;
+    const descripcion = data.marca ? `${data.marca} ${data.modelo || ''}` : identificador;
 
-    const twilioData = await twilioRes.json();
+    // Enviar email
+    await resend.emails.send({
+      from: 'QRnet.io <noreply@qrnet.io>',
+      to: ownerEmail,
+      subject: `${tipoEmoji} Aviso QRnet · ${motivo}`,
+      html: `
+        <div style="font-family:sans-serif;max-width:520px;margin:0 auto;padding:40px 20px">
+          <div style="background:#f8f9fa;border-radius:16px;padding:32px;border:1px solid #e9ecef">
+            <h1 style="color:#1a1a1a;font-size:20px;margin-bottom:4px">${tipoEmoji} Aviso para tu ${tipoLabel}</h1>
+            <p style="color:#888;font-size:13px;margin-bottom:24px">
+              Alguien ha enviado un aviso sobre <strong>${descripcion}</strong> · ${qr.public_code}
+            </p>
 
-    if (!twilioRes.ok) {
-      console.error('Twilio error:', twilioData);
-      return NextResponse.json({ error: 'Error al enviar notificación' }, { status: 500 });
-    }
+            <div style="background:#fff;border-radius:12px;padding:20px;border:1px solid #e9ecef;margin-bottom:16px">
+              <div style="margin-bottom:12px">
+                <span style="color:#888;font-size:12px;text-transform:uppercase;font-weight:600">Motivo</span>
+                <p style="color:#1a1a1a;font-size:16px;font-weight:700;margin:4px 0 0">${motivo}</p>
+              </div>
+              ${mensaje ? `
+              <div style="border-top:1px solid #e9ecef;padding-top:12px">
+                <span style="color:#888;font-size:12px;text-transform:uppercase;font-weight:600">Mensaje</span>
+                <p style="color:#333;font-size:14px;line-height:1.6;margin:4px 0 0">${mensaje.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</p>
+              </div>
+              ` : ''}
+            </div>
 
-    // Registrar la notificación en scans
+            <p style="color:#888;font-size:12px;margin-bottom:16px">
+              Este aviso fue enviado de forma anónima. No se ha compartido ningún dato del remitente.
+            </p>
+
+            <a href="${process.env.NEXTAUTH_URL || 'https://qrnet.io'}/dashboard"
+               style="display:inline-block;background:#00c8ff;color:#000;padding:12px 24px;border-radius:40px;font-weight:700;text-decoration:none;font-size:13px">
+              Ir a mi panel
+            </a>
+          </div>
+          <p style="color:#aaa;font-size:11px;text-align:center;margin-top:24px">
+            QRnet.io · Notificación automática
+          </p>
+        </div>
+      `
+    });
+
+    // Registrar el escaneo
     await pool.query(
-      'INSERT INTO qr_scans (qr_code_id, scanned_at) VALUES (?, NOW())',
+      'INSERT INTO qr_scans (qr_id, scanned_at) VALUES (?, NOW())',
       [qr.id]
     ).catch(() => {});
 

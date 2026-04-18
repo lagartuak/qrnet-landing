@@ -40,8 +40,8 @@ export async function POST(req: NextRequest) {
     ).catch(() => {});
 
     // Enviar email al propietario
-    await resend.emails.send({
-      from: 'QRnet.io <noreply@send.qrnet.io>',
+    const emailResult = await resend.emails.send({
+      from: 'QRnet.io <noreply@qrnet.io>',
       to: ownerEmail,
       subject: `💬 Nuevo mensaje privado — QRnet.io`,
       html: `
@@ -70,6 +70,7 @@ export async function POST(req: NextRequest) {
       `
     });
 
+    console.log("Email result:", JSON.stringify(emailResult));
     return NextResponse.json({ ok: true });
   } catch (error: any) {
     console.error('Error message:', error);

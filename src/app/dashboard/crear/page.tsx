@@ -59,7 +59,7 @@ const tipos = [
     titulo: 'Mascota',
     desc: 'Medalla QR para el collar. Si se pierde, cualquiera puede contactar al dueño al instante.',
     tags: ['Contacto inmediato', 'Info médica', 'Sin app'],
-    activo: false,
+    activo: true,
   },
   {
     slug: 'objeto',
