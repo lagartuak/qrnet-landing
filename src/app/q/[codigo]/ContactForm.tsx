@@ -12,6 +12,15 @@ const MOTIVOS_VEHICULO = [
   { valor: 'otro', emoji: '📋', label: 'Otro motivo' },
 ];
 
+const MOTIVOS_MASCOTA = [
+  { valor: "encontrada", emoji: "🔍", label: "Mascota encontrada" },
+  { valor: "perdida", emoji: "📢", label: "Mascota perdida/desorientada" },
+  { valor: "herida", emoji: "🚑", label: "Mascota herida" },
+  { valor: "sin_agua", emoji: "💧", label: "Sin agua/comida" },
+  { valor: "atada", emoji: "🔗", label: "Atada sin dueño" },
+  { valor: "otro", emoji: "📋", label: "Otro motivo" },
+];
+
 const MOTIVOS_BICICLETA = [
   { valor: 'encontrada', emoji: '🔍', label: 'Bicicleta/patinete encontrado' },
   { valor: 'accidente', emoji: '🚑', label: 'Accidente del propietario' },
@@ -23,7 +32,7 @@ const MOTIVOS_BICICLETA = [
 ];
 
 export default function ContactForm({ qrId, matricula, tipo = 'vehiculo' }: { qrId: number; matricula: string; tipo?: string }) {
-  const MOTIVOS = tipo === 'personal' ? [] : tipo === 'bicicleta' ? MOTIVOS_BICICLETA : MOTIVOS_VEHICULO;
+  const MOTIVOS = tipo === 'personal' ? [] : tipo === 'mascota' ? MOTIVOS_MASCOTA : tipo === 'bicicleta' ? MOTIVOS_BICICLETA : MOTIVOS_VEHICULO;
   const [motivo, setMotivo] = useState('');
   const [mensaje, setMensaje] = useState('');
   const [enviado, setEnviado] = useState(false);
