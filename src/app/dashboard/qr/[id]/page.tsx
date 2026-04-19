@@ -57,7 +57,8 @@ export default async function QRDetailPage({ params }: { params: Promise<{ id: s
               centro={data.centro}
               publicCode={qr.public_code}
               qrId={qr.id}
-            />          : qr.object_type === "verificacion_encuentro" ? (
+            />
+          ) : qr.object_type === "verificacion_encuentro" ? (
             <ShareEncuentro
               nombreA={data.nombre_a}
               nombreB={data.nombre_b}
@@ -72,7 +73,7 @@ export default async function QRDetailPage({ params }: { params: Promise<{ id: s
               publicCode={qr.public_code}
               qrId={qr.id}
             />
-          ) : null
+          ) : null}
         </div>
 
         {qr.verification_code && (
