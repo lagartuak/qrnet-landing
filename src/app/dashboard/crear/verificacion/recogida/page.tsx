@@ -86,7 +86,7 @@ export default function RecogidaPage() {
     if (!form.tel_tutor) vacios.push('tel_tutor');
     if (!form.email_tutor) vacios.push('email_tutor');
 
-    const autorizadosValidos = autorizados.filter(a => a.nombre && a.parentesco);
+    const autorizadosValidos = autorizados.filter(a => a.nombre && a.parentesco).map(a => ({...a, pin: String(Math.floor(1000 + Math.random() * 9000))}));
     if (autorizadosValidos.length === 0) {
       vacios.push('autorizados');
       setError('Añade al menos una persona autorizada con nombre y parentesco');

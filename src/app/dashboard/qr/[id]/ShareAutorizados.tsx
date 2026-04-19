@@ -34,7 +34,8 @@ export default function ShareAutorizados({
     `Has sido autorizado/a para recoger a *${nombreMenor}* en *${centro}*.\n\n` +
     `Cuando vayas a recogerlo/a, muestra este enlace al centro:\n` +
     `👉 ${publicUrl}\n\n` +
-    `Tu nombre aparecerá como persona autorizada ✅\n\n` +
+    `Tu PIN de verificación es: *${a.pin || 'N/A'}*
+Muestra este PIN junto con tu DNI al recoger al menor ✅\n\n` +
     `— Enviado desde QRnet.io`
   );
 
@@ -51,6 +52,7 @@ export default function ShareAutorizados({
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           qr_id: qrId,
+          pin: a.pin || '',
           to_email: autorizado.email,
           to_name: autorizado.nombre,
           nombre_menor: nombreMenor,

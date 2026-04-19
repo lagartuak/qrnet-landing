@@ -11,7 +11,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'No autenticado' }, { status: 401 });
     }
 
-    const { to_email, to_name, nombre_menor, centro, public_code } = await req.json();
+    const { to_email, to_name, nombre_menor, centro, public_code, pin } = await req.json();
 
     if (!to_email || !to_name || !nombre_menor || !centro || !public_code) {
       return NextResponse.json({ error: 'Datos incompletos' }, { status: 400 });
