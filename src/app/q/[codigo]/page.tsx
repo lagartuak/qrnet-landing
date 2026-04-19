@@ -762,6 +762,8 @@ export default async function QRPublicPage({ params }: Props) {
       </div>
     );
 
+  }
+
   // --- VERIFICACIÓN ENCUENTRO ---
   if (qr.object_type === 'verificacion_encuentro') {
     return (
@@ -868,7 +870,7 @@ export default async function QRPublicPage({ params }: Props) {
       </div>
     );
   }
-  }
+
   // --- MÁQUINAS (código original) ---
   const waTel = (data.tel_resp || '').replace(/\D/g, '');
   const waTxt = encodeURIComponent(
