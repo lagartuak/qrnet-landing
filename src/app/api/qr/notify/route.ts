@@ -6,7 +6,7 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 
 export async function POST(req: NextRequest) {
   try {
-    const { qr_id, motivo, mensaje } = await req.json();
+    const { qr_id, motivo, mensaje, contacto } = await req.json();
     if (!qr_id || !motivo) {
       return NextResponse.json({ error: 'Datos incompletos' }, { status: 400 });
     }
@@ -71,6 +71,12 @@ export async function POST(req: NextRequest) {
                 <p style="color:#333;font-size:14px;line-height:1.6;margin:4px 0 0">${mensaje.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</p>
               </div>
               ` : ''}
+            ${contacto ? `
+              <div style="border-top:1px solid #e9ecef;padding-top:12px">
+                <span style="color:#888;font-size:12px;text-transform:uppercase;font-weight:600">Contacto del remitente</span>
+                <p style="color:#00c8ff;font-size:16px;font-weight:700;margin:4px 0 0">${contacto}</p>
+              </div>
+            ` : ''}
             </div>
 
             <p style="color:#888;font-size:12px;margin-bottom:16px">

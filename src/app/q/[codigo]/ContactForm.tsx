@@ -50,6 +50,7 @@ export default function ContactForm({ qrId, matricula, tipo = 'vehiculo' }: { qr
   const MOTIVOS = tipo === 'personal' ? [] : tipo === 'recogida' ? MOTIVOS_RECOGIDA : tipo === 'objeto' ? MOTIVOS_OBJETO : tipo === 'mascota' ? MOTIVOS_MASCOTA : tipo === 'bicicleta' ? MOTIVOS_BICICLETA : MOTIVOS_VEHICULO;
   const [motivo, setMotivo] = useState('');
   const [mensaje, setMensaje] = useState('');
+  const [contacto, setContacto] = useState('');
   const [enviado, setEnviado] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -66,7 +67,7 @@ export default function ContactForm({ qrId, matricula, tipo = 'vehiculo' }: { qr
       const res = await fetch(tipo === 'personal' ? '/api/qr/message' : '/api/qr/notify', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ qr_id: qrId, motivo: motivoLabel, mensaje }),
+        body: JSON.stringify({ qr_id: qrId, motivo: motivoLabel, mensaje, contacto }),
       });
       if (res.ok) {
         setEnviado(true);
@@ -124,7 +125,7 @@ export default function ContactForm({ qrId, matricula, tipo = 'vehiculo' }: { qr
 
       <textarea
         rows={3}
-        placeholder="Mensaje adicional (opcional)"
+        placeholder="Describe la situación, dónde está el objeto, etc."
         value={mensaje}
         onChange={e => setMensaje(e.target.value)}
         style={{
