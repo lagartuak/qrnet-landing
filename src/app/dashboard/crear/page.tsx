@@ -67,7 +67,7 @@ const tipos = [
     titulo: 'Objeto Personal',
     desc: 'Maletas, instrumentos, cámaras... Si lo pierdes, quien lo encuentre puede devolvértelo.',
     tags: ['Contacto anónimo', 'Recompensa', 'Privacidad'],
-    activo: false,
+    activo: true,
   },
 ];
 export default function CrearPage() {

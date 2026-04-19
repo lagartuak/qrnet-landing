@@ -1,0 +1,115 @@
+
+  // --- OBJETO PERSONAL ---
+  if (qr.object_type === 'objeto') {
+    const tipoEmoji = data.tipo_objeto === 'llaves' ? '🔑'
+      : data.tipo_objeto === 'cartera' ? '👛'
+      : data.tipo_objeto === 'mochila' ? '🎒'
+      : data.tipo_objeto === 'maleta' ? '🧳'
+      : data.tipo_objeto === 'portatil' ? '💻'
+      : data.tipo_objeto === 'camara' ? '📷'
+      : data.tipo_objeto === 'auriculares' ? '🎧'
+      : data.tipo_objeto === 'instrumento' ? '🎸'
+      : data.tipo_objeto === 'deporte' ? '⚽'
+      : data.tipo_objeto === 'paraguas' ? '☂️'
+      : data.tipo_objeto === 'gafas' ? '👓'
+      : data.tipo_objeto === 'herramientas' ? '🔧'
+      : '📦';
+
+    return (
+      <div className="qr-page">
+        <div className="qr-topbar">
+          <span className="qr-brand">{tipoEmoji} QRnet · Objeto</span>
+          <span className="qr-badge">Contacto inmediato</span>
+        </div>
+
+        <div className="qr-card">
+          <div className="qr-card-header">
+            <div className="qr-estab-row">
+              <div className="qr-estab-icon" style={{fontSize:'32px'}}>{tipoEmoji}</div>
+              <div>
+                <div className="qr-sublabel">Objeto registrado</div>
+                <div className="qr-estab-name">{data.descripcion}</div>
+              </div>
+            </div>
+            <div className="qr-status-pill">
+              <div className="qr-status-dot" />
+              QR verificado · {qr.public_code}
+            </div>
+          </div>
+
+          <div className="qr-body">
+            {data.recompensa === 'si' && (
+              <div style={{background:'rgba(255,200,0,.1)',border:'1px solid rgba(255,200,0,.3)',borderRadius:'12px',padding:'16px 20px',marginBottom:'24px',display:'flex',alignItems:'center',gap:'12px'}}>
+                <span style={{fontSize:'28px'}}>🎁</span>
+                <div>
+                  <div style={{color:'#f0f8ff',fontSize:'15px',fontWeight:700}}>Recompensa por devolución</div>
+                  <div style={{color:'#ffc800',fontSize:'14px',fontWeight:600}}>{data.recompensa_cantidad || 'El propietario ofrece recompensa'}</div>
+                </div>
+              </div>
+            )}
+
+            <div className="qr-section-title">Datos del objeto</div>
+            <div className="qr-info-grid">
+              {data.marca && (
+                <div className="qr-info-item">
+                  <div className="qr-ikey">Marca</div>
+                  <div className="qr-ival">{data.marca}</div>
+                </div>
+              )}
+              {data.modelo && (
+                <div className="qr-info-item">
+                  <div className="qr-ikey">Modelo</div>
+                  <div className="qr-ival">{data.modelo}</div>
+                </div>
+              )}
+              {data.color && (
+                <div className="qr-info-item">
+                  <div className="qr-ikey">Color</div>
+                  <div className="qr-ival">{data.color}</div>
+                </div>
+              )}
+              {data.num_serie && (
+                <div className="qr-info-item">
+                  <div className="qr-ikey">Nº de serie</div>
+                  <div className="qr-ival">{data.num_serie}</div>
+                </div>
+              )}
+            </div>
+
+            {data.nombre_propietario && (
+              <>
+                <div className="qr-divider" />
+                <div className="qr-section-title">Propietario</div>
+                <div className="qr-resp-block">
+                  <div className="qr-avatar">{(data.nombre_propietario || 'P').charAt(0).toUpperCase()}</div>
+                  <div>
+                    <div className="qr-resp-name">{data.nombre_propietario}</div>
+                    {data.ciudad && <div className="qr-resp-role">{data.ciudad}</div>}
+                  </div>
+                </div>
+              </>
+            )}
+
+            <div className="qr-divider" />
+
+            <div className="qr-section-title">¿Has encontrado este objeto?</div>
+            <p style={{ color: '#9C8672', fontSize: '14px', lineHeight: '1.6', marginBottom: '24px' }}>
+              Avisa al propietario. Recibirá una notificación al instante.
+              <strong> Tus datos no serán compartidos.</strong>
+              {data.recompensa === 'si' && (
+                <span style={{color:'#ffc800'}}> El propietario ofrece recompensa por la devolución.</span>
+              )}
+            </p>
+
+            <ContactForm qrId={qr.id} matricula={data.num_serie || ''} tipo="objeto" />
+          </div>
+        </div>
+
+        <div className="qr-footer">
+          <span>Servicio de contacto inmediato</span>
+          <span className="qr-footer-logo" style={{display:"flex",alignItems:"center",gap:"8px"}}><img src="/logo.png" alt="QRnet.io" style={{width:22,height:22}} />QRnet.io</span>
+          <a href="https://qrnet.io" target="_blank" rel="noreferrer">qrnet.io</a>
+        </div>
+      </div>
+    );
+  }
