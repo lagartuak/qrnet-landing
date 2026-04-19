@@ -1,0 +1,107 @@
+
+  // --- VERIFICACIÓN ENCUENTRO ---
+  if (qr.object_type === 'verificacion_encuentro') {
+    return (
+      <div className="qr-page">
+        <div className="qr-topbar">
+          <span className="qr-brand">🤝 QRnet · Verificación</span>
+          <span className="qr-badge">{data.fecha_verificacion ? 'Verificado ✅' : 'Pendiente'}</span>
+        </div>
+
+        <div className="qr-card">
+          <div className="qr-card-header">
+            <div className="qr-estab-row">
+              <div className="qr-estab-icon" style={{fontSize:'32px'}}>🤝</div>
+              <div>
+                <div className="qr-sublabel">{data.motivo_label}</div>
+                <div className="qr-estab-name">{data.descripcion}</div>
+              </div>
+            </div>
+            {data.lugar && (
+              <div className="qr-addr">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2">
+                  <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+                  <circle cx="12" cy="10" r="3"/>
+                </svg>
+                <span>{data.lugar}{data.ciudad ? `, ${data.ciudad}` : ''}</span>
+              </div>
+            )}
+            <div className="qr-status-pill">
+              <div className="qr-status-dot" />
+              {data.fecha_verificacion ? 'Encuentro verificado' : 'Verificación pendiente'} · {qr.public_code}
+            </div>
+          </div>
+
+          <div className="qr-body">
+            <div className="qr-section-title">Participantes</div>
+            <div style={{display:'flex',gap:'12px',marginBottom:'24px',flexWrap:'wrap'}}>
+              <div style={{flex:1,minWidth:'140px',background:'rgba(0,200,255,.05)',borderRadius:'12px',padding:'16px',textAlign:'center'}}>
+                <div style={{fontSize:'24px',marginBottom:'8px'}}>👤</div>
+                <div style={{color:'#f0f8ff',fontSize:'15px',fontWeight:700}}>{data.nombre_a}</div>
+                <div style={{color:'#9C8672',fontSize:'12px'}}>Persona A</div>
+              </div>
+              <div style={{display:'flex',alignItems:'center',fontSize:'20px',color:'#6a8a95'}}>↔</div>
+              <div style={{flex:1,minWidth:'140px',background:'rgba(0,200,255,.05)',borderRadius:'12px',padding:'16px',textAlign:'center'}}>
+                <div style={{fontSize:'24px',marginBottom:'8px'}}>👤</div>
+                <div style={{color:'#f0f8ff',fontSize:'15px',fontWeight:700}}>{data.nombre_b}</div>
+                <div style={{color:'#9C8672',fontSize:'12px'}}>Persona B</div>
+              </div>
+            </div>
+
+            {data.fecha_prevista && (
+              <div className="qr-info-grid" style={{marginBottom:'24px'}}>
+                <div className="qr-info-item">
+                  <div className="qr-ikey">Fecha prevista</div>
+                  <div className="qr-ival">{new Date(data.fecha_prevista).toLocaleDateString('es-ES', {dateStyle:'long'})}</div>
+                </div>
+              </div>
+            )}
+
+            {data.fecha_verificacion ? (
+              <div style={{
+                background:'rgba(0,200,100,.1)',
+                border:'2px solid rgba(0,200,100,.4)',
+                borderRadius:'16px',
+                padding:'24px',
+                textAlign:'center',
+              }}>
+                <div style={{fontSize:'48px',marginBottom:'12px'}}>✅</div>
+                <h3 style={{color:'#00c864',fontSize:'20px',fontWeight:800,marginBottom:'8px'}}>
+                  ENCUENTRO VERIFICADO
+                </h3>
+                <p style={{color:'#9C8672',fontSize:'14px'}}>
+                  Verificado el {new Date(data.fecha_verificacion).toLocaleString('es-ES', {dateStyle:'long',timeStyle:'short'})}
+                </p>
+              </div>
+            ) : (
+              <>
+                <div className="qr-divider" />
+                <PinEncuentro
+                  nombreA={data.nombre_a}
+                  nombreB={data.nombre_b}
+                  descripcion={data.descripcion}
+                  motivoLabel={data.motivo_label}
+                  qrId={qr.id}
+                  publicCode={qr.public_code}
+                />
+              </>
+            )}
+
+            {data.observaciones && (
+              <>
+                <div className="qr-divider" />
+                <div className="qr-section-title">Observaciones</div>
+                <p style={{color:'#9C8672',fontSize:'14px',lineHeight:'1.6'}}>{data.observaciones}</p>
+              </>
+            )}
+          </div>
+        </div>
+
+        <div className="qr-footer">
+          <span>Verificación certificada</span>
+          <span className="qr-footer-logo" style={{display:"flex",alignItems:"center",gap:"8px"}}><img src="/logo.png" alt="QRnet.io" style={{width:22,height:22}} />QRnet.io</span>
+          <a href="https://qrnet.io" target="_blank" rel="noreferrer">qrnet.io</a>
+        </div>
+      </div>
+    );
+  }
