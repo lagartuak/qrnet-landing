@@ -29,7 +29,7 @@ export async function POST(req: NextRequest) {
             <h1 style="color:#1a1a1a;font-size:20px;margin-bottom:4px">🏫 Autorización de recogida</h1>
             <p style="color:#333;font-size:15px;line-height:1.6;margin-bottom:24px">
               Hola <strong>${to_name}</strong>,<br><br>
-              Has sido autorizado/a para recoger a <strong>${nombre_menor}</strong> en <strong>${centro}</strong>.
+              Tu PIN de verificación:</p><p style="text-align:center;font-size:32px;font-weight:800;color:#00c8ff;letter-spacing:6px;margin:16px 0"></p><p style="color:#333;font-size:15px;line-height:1.6">Has sido autorizado/a para recoger a <strong>${nombre_menor}</strong> en <strong>${centro}</strong>.
             </p>
 
             <div style="background:#fff;border-radius:12px;padding:20px;border:1px solid #e9ecef;margin-bottom:24px;text-align:center">

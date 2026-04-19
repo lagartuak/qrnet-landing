@@ -8,6 +8,7 @@ interface Autorizado {
   dni?: string;
   telefono?: string;
   email?: string;
+  pin?: string;
 }
 
 export default function ShareAutorizados({ 
@@ -29,15 +30,22 @@ export default function ShareAutorizados({
 
   const publicUrl = `https://qrnet.io/q/${publicCode}`;
 
-  const mensajeWA = (nombre: string) => encodeURIComponent(
+  const mensajeWA = (nombre: string, pin: string) => encodeURIComponent(
     `Hola ${nombre} 👋\n\n` +
     `Has sido autorizado/a para recoger a *${nombreMenor}* en *${centro}*.\n\n` +
-    `Cuando vayas a recogerlo/a, muestra este enlace al centro:\n` +
+    `🔐 Tu PIN de verificación: *${pin}*\n\n` +
+    `Cuando vayas a recogerlo/a, muestra este enlace y facilita tu PIN:\n` +
     `👉 ${publicUrl}\n\n` +
-    `Tu PIN de verificación es: *${a.pin || 'N/A'}*
-Muestra este PIN junto con tu DNI al recoger al menor ✅\n\n` +
+    `También deberás mostrar tu DNI para confirmar tu identidad ✅\n\n` +
     `— Enviado desde QRnet.io`
   );
+
+  const getWAUrl = (a: Autorizado) => {
+    const tel = (a.telefono || '').replace(/\s/g, '');
+    return tel
+      ? `https://wa.me/${tel}?text=${mensajeWA(a.nombre, a.pin || '')}`
+      : `https://wa.me/?text=${mensajeWA(a.nombre, a.pin || '')}`;
+  };
 
   const enviarEmail = async (autorizado: Autorizado, index: number) => {
     if (!autorizado.email) {
@@ -52,12 +60,12 @@ Muestra este PIN junto con tu DNI al recoger al menor ✅\n\n` +
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           qr_id: qrId,
-          pin: a.pin || '',
           to_email: autorizado.email,
           to_name: autorizado.nombre,
           nombre_menor: nombreMenor,
           centro: centro,
           public_code: publicCode,
+          pin: autorizado.pin || '',
         }),
       });
       if (res.ok) {
@@ -72,15 +80,6 @@ Muestra este PIN junto con tu DNI al recoger al menor ✅\n\n` +
     setEnviando(null);
   };
 
-  const compartirWhatsApp = (autorizado: Autorizado, index: number) => {
-    const tel = (autorizado.telefono || '').replace(/\s/g, '');
-    const url = tel 
-      ? `https://wa.me/${tel}?text=${mensajeWA(autorizado.nombre)}`
-      : `https://wa.me/?text=${mensajeWA(autorizado.nombre)}`;
-    window.location.href = url;
-    setEnviados([...enviados, `wa-${index}`]);
-  };
-
   return (
     <div style={{ marginTop: '24px' }}>
       <div style={{
@@ -88,7 +87,7 @@ Muestra este PIN junto con tu DNI al recoger al menor ✅\n\n` +
         borderRadius: '12px', padding: '16px 20px', marginBottom: '20px',
       }}>
         <p style={{ color: '#9CC', fontSize: '13px', lineHeight: '1.5', margin: 0 }}>
-          📤 Comparte la autorización con cada persona. Pueden usar el enlace para identificarse en el centro.
+          📤 Comparte la autorización con cada persona. Recibirán el enlace y su PIN de verificación.
         </p>
       </div>
 
@@ -111,13 +110,20 @@ Muestra este PIN junto con tu DNI al recoger al menor ✅\n\n` +
               <div style={{ color: '#f0f8ff', fontSize: '15px', fontWeight: 700 }}>{a.nombre}</div>
               <div style={{ color: '#9C8672', fontSize: '13px' }}>{a.parentesco}</div>
             </div>
+            {a.pin && (
+              <div style={{ color: '#00c8ff', fontSize: '12px', fontWeight: 700 }}>
+                PIN: {a.pin}
+              </div>
+            )}
           </div>
           <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
-            <button
-              onClick={() => compartirWhatsApp(a, i)}
+            <a
+              href={getWAUrl(a)}
+              target="_blank"
+              rel="noreferrer"
               style={{
-                background: enviados.includes(`wa-${i}`) ? 'rgba(0,200,100,.15)' : 'rgba(37,211,102,.15)',
-                color: enviados.includes(`wa-${i}`) ? '#00c864' : '#25d366',
+                background: 'rgba(37,211,102,.15)',
+                color: '#25d366',
                 border: 'none',
                 padding: '10px 20px',
                 borderRadius: '10px',
@@ -127,10 +133,11 @@ Muestra este PIN junto con tu DNI al recoger al menor ✅\n\n` +
                 display: 'flex',
                 alignItems: 'center',
                 gap: '8px',
+                textDecoration: 'none',
               }}
             >
-              {enviados.includes(`wa-${i}`) ? '✅ Enviado' : '💬 WhatsApp'}
-            </button>
+              💬 WhatsApp
+            </a>
             <button
               onClick={() => enviarEmail(a, i)}
               disabled={enviando === `email-${i}` || !a.email}
