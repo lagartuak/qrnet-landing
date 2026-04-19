@@ -4,6 +4,7 @@ import { redirect } from 'next/navigation'
 import pool from '@/lib/db'
 import Link from 'next/link'
 import DownloadButton from './DownloadButton'
+import ShareAutorizados from './ShareAutorizados'
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 export default async function QRDetailPage({ params }: { params: Promise<{ id: string }> }) {
@@ -57,8 +58,6 @@ export default async function QRDetailPage({ params }: { params: Promise<{ id: s
               qrId={qr.id}
             />
           )}
-          <div style={{display:"none"}}
-          </div>
         </div>
 
         {qr.verification_code && (
