@@ -125,7 +125,7 @@ export default function ContactForm({ qrId, matricula, tipo = 'vehiculo' }: { qr
 
       <textarea
         rows={3}
-        placeholder="Describe la situación, dónde está el objeto, etc."
+        placeholder="Mensaje adicional (opcional), dónde está el objeto, etc."
         value={mensaje}
         onChange={e => setMensaje(e.target.value)}
         style={{
@@ -142,6 +142,9 @@ export default function ContactForm({ qrId, matricula, tipo = 'vehiculo' }: { qr
           fontFamily: 'sans-serif',
         }}
       />
+
+      <input type="text" placeholder="Tu teléfono o email (para que puedan contactarte)" value={contacto} onChange={e => setContacto(e.target.value)} style={{width:"100%",background:"rgba(255,255,255,.03)",border:"1px solid rgba(255,255,255,.1)",borderRadius:"12px",padding:"12px 16px",fontSize:"14px",color:"#1a1a1a",outline:"none",marginBottom:"4px",fontFamily:"sans-serif"}} />
+      <p style={{color:"#ff6b35",fontSize:"11px",marginBottom:"16px",lineHeight:"1.4"}}>⚠️ Sin datos de contacto el propietario no podrá responderte para coordinar la devolución.</p>
 
       {error && (
         <div style={{ background: 'rgba(255,80,80,.1)', border: '1px solid rgba(255,80,80,.2)', borderRadius: '10px', padding: '12px', color: '#ff6b6b', fontSize: '13px', marginBottom: '16px', textAlign: 'center' }}>
