@@ -32,7 +32,7 @@ export default async function QRDetailPage({ params }: { params: Promise<{ id: s
       <div style={{ maxWidth: '720px', margin: '0 auto', padding: '48px 24px' }}>
         <div style={{ marginBottom: '32px' }}>
           <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: 'rgba(0,200,255,.08)', border: '1px solid rgba(0,200,255,.2)', borderRadius: '40px', padding: '4px 14px', fontSize: '11px', fontWeight: 700, color: '#00c8ff', letterSpacing: '.1em', textTransform: 'uppercase', marginBottom: '16px' }}>
-            {qr.object_type === 'vehiculo' ? '🚗 Vehículo' : qr.object_type === 'bicicleta' ? '🚲 Bicicleta / Patinete' : qr.object_type === 'empresa' ? '🏢 Empresa' : qr.object_type === 'personal' ? '👤 Personal' : qr.object_type === 'mascota' ? '🐾 Mascota' : qr.object_type === 'objeto' ? '🎒 Objeto' : data.tipo_maquina === 'vending' ? '🥤 Vending' : '🚬 Máquina de Tabaco'}
+            {qr.object_type === 'vehiculo' ? '🚗 Vehículo' : qr.object_type === 'bicicleta' ? '🚲 Bicicleta / Patinete' : qr.object_type === 'empresa' ? '🏢 Empresa' : qr.object_type === 'personal' ? '👤 Personal' : qr.object_type === 'mascota' ? '🐾 Mascota' : qr.object_type === 'objeto' ? '🎒 Objeto' : qr.object_type === 'verificacion_recogida' ? '🏫 Recogida' : data.tipo_maquina === 'vending' ? '🥤 Vending' : '🚬 Máquina de Tabaco'}
           </div>
           <h1 style={{ color: '#f0f8ff', fontSize: '28px', fontWeight: 800, letterSpacing: '-.03em', marginBottom: '8px' }}>{qr.title}</h1>
           <p style={{ color: '#6a8a95', fontSize: '14px' }}>Código: <strong style={{ color: '#00c8ff' }}>{qr.public_code}</strong></p>

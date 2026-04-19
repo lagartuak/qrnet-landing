@@ -62,6 +62,14 @@ const tipos = [
     activo: true,
   },
   {
+    slug: 'verificacion',
+    emoji: '✅',
+    titulo: 'Verificación / Autorización',
+    desc: 'Recogida de menores, entregas certificadas, encuentros seguros y control de acceso.',
+    tags: ['Colegios', 'Entregas', 'Seguridad'],
+    activo: true,
+  },
+  {
     slug: 'objeto',
     emoji: '🎒',
     titulo: 'Objeto Personal',
