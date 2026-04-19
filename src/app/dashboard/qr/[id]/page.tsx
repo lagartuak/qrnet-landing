@@ -48,6 +48,17 @@ export default async function QRDetailPage({ params }: { params: Promise<{ id: s
             <DownloadButton url={qrImageUrl} filename={downloadName} />
             <a href={publicUrl} target="_blank" rel="noreferrer" style={{ border: '1px solid rgba(0,200,255,.3)', color: '#00c8ff', padding: '12px 28px', borderRadius: '40px', fontWeight: 600, fontSize: '14px', textDecoration: 'none', background: 'rgba(0,200,255,.05)' }}>👁 Ver página pública</a>
           </div>
+          {qr.object_type === "verificacion_recogida" && data.autorizados && (
+            <ShareAutorizados
+              autorizados={data.autorizados}
+              nombreMenor={data.nombre_menor}
+              centro={data.centro}
+              publicCode={qr.public_code}
+              qrId={qr.id}
+            />
+          )}
+          <div style={{display:"none"}}
+          </div>
         </div>
 
         {qr.verification_code && (
