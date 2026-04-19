@@ -77,7 +77,7 @@ Muestra este PIN junto con tu DNI al recoger al menor ✅\n\n` +
     const url = tel 
       ? `https://wa.me/${tel}?text=${mensajeWA(autorizado.nombre)}`
       : `https://wa.me/?text=${mensajeWA(autorizado.nombre)}`;
-    window.open(url, '_blank');
+    window.location.href = url;
     setEnviados([...enviados, `wa-${index}`]);
   };
 
