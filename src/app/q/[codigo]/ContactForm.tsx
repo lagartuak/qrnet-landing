@@ -12,6 +12,13 @@ const MOTIVOS_VEHICULO = [
   { valor: 'otro', emoji: '📋', label: 'Otro motivo' },
 ];
 
+const MOTIVOS_INVITACION = [
+  { valor: "confirmar", emoji: "✅", label: "Confirmar invitación" },
+  { valor: "cancelar", emoji: "❌", label: "No puedo asistir" },
+  { valor: "cambio", emoji: "🔄", label: "Solicitar cambio de fecha" },
+  { valor: "otro", emoji: "📋", label: "Otro" },
+];
+
 const MOTIVOS_RECOGIDA = [
   { valor: "recogida_ok", emoji: "✅", label: "Recogida realizada" },
   { valor: "persona_no_autorizada", emoji: "⚠️", label: "Persona no autorizada" },
@@ -47,7 +54,7 @@ const MOTIVOS_BICICLETA = [
 ];
 
 export default function ContactForm({ qrId, matricula, tipo = 'vehiculo' }: { qrId: number; matricula: string; tipo?: string }) {
-  const MOTIVOS = tipo === 'personal' ? [] : tipo === 'recogida' ? MOTIVOS_RECOGIDA : tipo === 'objeto' ? MOTIVOS_OBJETO : tipo === 'mascota' ? MOTIVOS_MASCOTA : tipo === 'bicicleta' ? MOTIVOS_BICICLETA : MOTIVOS_VEHICULO;
+  const MOTIVOS = tipo === 'personal' ? [] : tipo === 'invitacion' ? MOTIVOS_INVITACION : tipo === 'recogida' ? MOTIVOS_RECOGIDA : tipo === 'objeto' ? MOTIVOS_OBJETO : tipo === 'mascota' ? MOTIVOS_MASCOTA : tipo === 'bicicleta' ? MOTIVOS_BICICLETA : MOTIVOS_VEHICULO;
   const [motivo, setMotivo] = useState('');
   const [mensaje, setMensaje] = useState('');
   const [contacto, setContacto] = useState('');

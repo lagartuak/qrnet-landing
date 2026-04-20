@@ -21,21 +21,14 @@ const MODOS = [
     tags: ['Compraventa', 'Entregas', 'Seguridad'],
     activo: true,
   },
+  
   {
-    slug: 'entrega',
-    emoji: '📦',
-    titulo: 'Entrega certificada',
-    desc: 'Incluido en Encuentro / Entrega verificada.',
-    tags: ['Paquetes', 'Documentos', 'Certificado'],
-    activo: false,
-  },
-  {
-    slug: 'acceso',
+    slug: 'invitacion',
     emoji: '🎫',
-    titulo: 'Control de acceso',
-    desc: 'QR de acceso para eventos, zonas restringidas o invitaciones. Control de aforo en tiempo real.',
-    tags: ['Eventos', 'Invitaciones', 'Aforo'],
-    activo: false,
+    titulo: 'Invitación / Evento',
+    desc: 'Invita a alguien a un restaurante, evento o experiencia. Con PIN, límite de gasto y confirmación para las 3 partes.',
+    tags: ['Restaurantes', 'Eventos', 'Regalos'],
+    activo: true,
   },
 ];
 
