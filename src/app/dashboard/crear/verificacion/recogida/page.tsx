@@ -235,7 +235,7 @@ export default function RecogidaPage() {
                     <option key={p.code} value={p.code}>{p.pais} {p.code}</option>
                   ))}
                 </select>
-                <input type="tel" placeholder="600 000 000"
+                <input type="tel" inputMode="numeric" pattern="[0-9]*" placeholder="600 000 000"
                   value={form.tel_tutor} style={{ ...inputStyle('tel_tutor'), flex: 1 }}
                   onChange={e => set('tel_tutor', e.target.value)} />
               </div>
@@ -304,7 +304,7 @@ export default function RecogidaPage() {
                 </div>
                 <div className="form-field">
                   <label>Teléfono</label>
-                  <input type="tel" placeholder="+34 600 000 000"
+                  <input type="tel" inputMode="numeric" pattern="[0-9]*" placeholder="+34 600 000 000"
                     value={a.telefono}
                     onChange={e => updateAutorizado(i, 'telefono', e.target.value)} />
                 </div>

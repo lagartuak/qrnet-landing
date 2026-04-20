@@ -255,7 +255,7 @@ export default function MascotaPage() {
             </div>
             <div className="form-field">
               <label>Teléfono del veterinario</label>
-              <input type="tel" placeholder="+34 948 000 000"
+              <input type="tel" inputMode="numeric" pattern="[0-9]*" placeholder="+34 948 000 000"
                 value={form.tel_veterinario}
                 onChange={e => set('tel_veterinario', e.target.value)} />
             </div>
@@ -288,7 +288,7 @@ export default function MascotaPage() {
                     <option key={p.code} value={p.code}>{p.pais} {p.code}</option>
                   ))}
                 </select>
-                <input type="tel" placeholder="600 000 000"
+                <input type="tel" inputMode="numeric" pattern="[0-9]*" placeholder="600 000 000"
                   value={form.tel_propietario} style={{ ...inputStyle('tel_propietario'), flex: 1 }}
                   onChange={e => set('tel_propietario', e.target.value)} />
               </div>
@@ -315,7 +315,7 @@ export default function MascotaPage() {
             </div>
             <div className="form-field">
               <label>Teléfono emergencia</label>
-              <input type="tel" placeholder="+34 600 000 000"
+              <input type="tel" inputMode="numeric" pattern="[0-9]*" placeholder="+34 600 000 000"
                 value={form.tel_emergencia}
                 onChange={e => set('tel_emergencia', e.target.value)} />
             </div>

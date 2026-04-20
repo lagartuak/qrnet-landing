@@ -168,7 +168,7 @@ export default function EmpresaPage() {
           <div className="form-grid">
             <div className="form-field">
               <label>Teléfono fijo</label>
-              <input type="tel" placeholder="Ej: 948 123 456"
+              <input type="tel" inputMode="numeric" pattern="[0-9]*" placeholder="Ej: 948 123 456"
                 value={form.tel_fijo}
                 onChange={e => set('tel_fijo', e.target.value)} />
             </div>
@@ -183,7 +183,7 @@ export default function EmpresaPage() {
                     <option key={p.code} value={p.code}>{p.pais} {p.code}</option>
                   ))}
                 </select>
-                <input type="tel" placeholder="600 000 000"
+                <input type="tel" inputMode="numeric" pattern="[0-9]*" placeholder="600 000 000"
                   value={form.tel_movil} style={{ ...inputStyle('tel_movil'), flex: 1 }}
                   onChange={e => set('tel_movil', e.target.value)} />
               </div>
@@ -307,7 +307,7 @@ export default function EmpresaPage() {
                     <option key={p.code} value={p.code}>{p.pais} {p.code}</option>
                   ))}
                 </select>
-                <input type="tel" placeholder="600 000 000"
+                <input type="tel" inputMode="numeric" pattern="[0-9]*" placeholder="600 000 000"
                   value={form.contacto_movil} style={{ flex: 1 }}
                   onChange={e => set('contacto_movil', e.target.value)} />
               </div>

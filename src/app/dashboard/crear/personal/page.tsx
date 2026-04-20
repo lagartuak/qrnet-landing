@@ -237,7 +237,7 @@ export default function PersonalPage() {
                     <option key={p.code} value={p.code}>{p.pais} {p.code}</option>
                   ))}
                 </select>
-                <input type="tel" placeholder="600 000 000"
+                <input type="tel" inputMode="numeric" pattern="[0-9]*" placeholder="600 000 000"
                   value={form.telefono} style={{ flex: 1 }}
                   onChange={e => set('telefono', e.target.value)} />
               </div>
