@@ -70,6 +70,14 @@ const tipos = [
     activo: true,
   },
   {
+    slug: 'cola',
+    emoji: '📋',
+    titulo: 'Cola / Turno',
+    desc: 'Gestión de cola de espera para restaurantes y bares. El cliente escanea, se registra y recibe aviso cuando le toca.',
+    tags: ['Restaurantes', 'Bares', 'Turnos'],
+    activo: true,
+  },
+  {
     slug: 'objeto',
     emoji: '🎒',
     titulo: 'Objeto Personal',

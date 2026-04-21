@@ -35,7 +35,7 @@ export default async function QRDetailPage({ params }: { params: Promise<{ id: s
       <div style={{ maxWidth: '720px', margin: '0 auto', padding: '48px 24px' }}>
         <div style={{ marginBottom: '32px' }}>
           <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: 'rgba(0,200,255,.08)', border: '1px solid rgba(0,200,255,.2)', borderRadius: '40px', padding: '4px 14px', fontSize: '11px', fontWeight: 700, color: '#00c8ff', letterSpacing: '.1em', textTransform: 'uppercase', marginBottom: '16px' }}>
-            {qr.object_type === 'vehiculo' ? '🚗 Vehículo' : qr.object_type === 'bicicleta' ? '🚲 Bicicleta / Patinete' : qr.object_type === 'empresa' ? '🏢 Empresa' : qr.object_type === 'personal' ? '👤 Personal' : qr.object_type === 'mascota' ? '🐾 Mascota' : qr.object_type === 'objeto' ? '🎒 Objeto' : qr.object_type === 'verificacion_recogida' ? '🏫 Recogida' : qr.object_type === 'verificacion_encuentro' ? '🤝 Encuentro' : qr.object_type === 'verificacion_invitacion' ? '🎫 Invitación' : data.tipo_maquina === 'vending' ? '🥤 Vending' : '🚬 Máquina de Tabaco'}
+            {qr.object_type === 'vehiculo' ? '🚗 Vehículo' : qr.object_type === 'bicicleta' ? '🚲 Bicicleta / Patinete' : qr.object_type === 'empresa' ? '🏢 Empresa' : qr.object_type === 'personal' ? '👤 Personal' : qr.object_type === 'mascota' ? '🐾 Mascota' : qr.object_type === 'objeto' ? '🎒 Objeto' : qr.object_type === 'verificacion_recogida' ? '🏫 Recogida' : qr.object_type === 'verificacion_encuentro' ? '🤝 Encuentro' : qr.object_type === 'verificacion_invitacion' ? '🎫 Invitación' : qr.object_type === 'cola' ? '📋 Cola' : data.tipo_maquina === 'vending' ? '🥤 Vending' : '🚬 Máquina de Tabaco'}
           </div>
           <h1 style={{ color: '#f0f8ff', fontSize: '28px', fontWeight: 800, letterSpacing: '-.03em', marginBottom: '8px' }}>{qr.title}</h1>
           <p style={{ color: '#6a8a95', fontSize: '14px' }}>Código: <strong style={{ color: '#00c8ff' }}>{qr.public_code}</strong></p>
@@ -50,6 +50,9 @@ export default async function QRDetailPage({ params }: { params: Promise<{ id: s
           <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap' }}>
             <DownloadButton url={qrImageUrl} filename={downloadName} />
             <a href={publicUrl} target="_blank" rel="noreferrer" style={{ border: '1px solid rgba(0,200,255,.3)', color: '#00c8ff', padding: '12px 28px', borderRadius: '40px', fontWeight: 600, fontSize: '14px', textDecoration: 'none', background: 'rgba(0,200,255,.05)' }}>👁 Ver página pública</a>
+            {qr.object_type === 'cola' && (
+              <a href={`/dashboard/cola/${qr.id}`} style={{ background: '#00c8ff', color: '#000', padding: '12px 28px', borderRadius: '40px', fontWeight: 600, fontSize: '14px', textDecoration: 'none' }}>📋 Gestionar cola</a>
+            )}
           </div>
           {(qr.object_type === "verificacion_recogida" && data.autorizados) ? (
             <ShareAutorizados
