@@ -452,6 +452,7 @@ export default function HomePage() {
             <li><a href="mailto:info@qrnet.io">Contacto</a></li>
             <li><a href="/aviso-legal">Aviso legal</a></li>
             <li><a href="/privacidad">Privacidad</a></li>
+            <li><a href="https://www.youtube.com/@QRnet_world" target="_blank" rel="noreferrer">YouTube</a></li>
           </ul>
         </div>
         <div className="footer-copy">
