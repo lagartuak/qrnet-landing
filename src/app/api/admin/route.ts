@@ -74,7 +74,7 @@ export async function POST(req: NextRequest) {
   }
 
   if (action === 'delete_user') {
-    await pool.query('DELETE FROM qr_scans WHERE qr_code_id IN (SELECT id FROM qr_codes WHERE user_id = ?)', [userId]);
+    await pool.query('DELETE FROM qr_scans WHERE qr_id IN (SELECT id FROM qr_codes WHERE user_id = ?)', [userId]);
     await pool.query('DELETE FROM qr_codes WHERE user_id = ?', [userId]);
     await pool.query('DELETE FROM subscriptions WHERE user_id = ?', [userId]);
     await pool.query('DELETE FROM email_verifications WHERE user_id = ?', [userId]);
