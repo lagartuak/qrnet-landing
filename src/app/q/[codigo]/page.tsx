@@ -189,6 +189,162 @@ export default async function QRPublicPage({ params }: Props) {
 
 
   // --- QR PERSONAL ---
+
+  // --- EMPRESA / AUTÓNOMO ---
+  if (qr.object_type === 'empresa') {
+    return (
+      <div className="qr-page">
+        <div className="qr-topbar">
+          <span className="qr-brand">🏢 QRnet · Empresa</span>
+          <span className="qr-badge">Tarjeta digital</span>
+        </div>
+
+        <div className="qr-card">
+          <div className="qr-card-header">
+            <div className="qr-estab-row">
+              <div className="qr-estab-icon">🏢</div>
+              <div>
+                <div className="qr-sublabel">{data.sector || 'Empresa'}</div>
+                <div className="qr-estab-name">{data.nombre_comercial}</div>
+              </div>
+            </div>
+            {data.direccion && (
+              <div className="qr-addr">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2">
+                  <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+                  <circle cx="12" cy="10" r="3"/>
+                </svg>
+                <span>{data.direccion}{data.codigo_postal ? `, ${data.codigo_postal}` : ''} {data.ciudad}{data.provincia ? ` (${data.provincia})` : ''}</span>
+              </div>
+            )}
+            <div className="qr-status-pill">
+              <div className="qr-status-dot" />
+              QR verificado · {qr.public_code}
+            </div>
+          </div>
+
+          <div className="qr-body">
+            <div className="qr-section-title">Datos de la empresa</div>
+            <div className="qr-info-grid">
+              {data.razon_social && (
+                <div className="qr-info-item full">
+                  <div className="qr-ikey">Razón social</div>
+                  <div className="qr-ival">{data.razon_social}</div>
+                </div>
+              )}
+              {data.cif_nif && (
+                <div className="qr-info-item">
+                  <div className="qr-ikey">CIF / NIF</div>
+                  <div className="qr-ival">{data.cif_nif}</div>
+                </div>
+              )}
+              {data.sector && (
+                <div className="qr-info-item">
+                  <div className="qr-ikey">Sector</div>
+                  <div className="qr-ival">{data.sector}</div>
+                </div>
+              )}
+            </div>
+
+            <div className="qr-divider" />
+
+            <div className="qr-section-title">Contacto</div>
+            <div className="qr-info-grid">
+              {data.tel_movil && (
+                <div className="qr-info-item">
+                  <div className="qr-ikey">Móvil</div>
+                  <div className="qr-ival"><a href={`tel:${data.tel_movil}`} style={{color:'#00c8ff',textDecoration:'none'}}>{data.tel_movil}</a></div>
+                </div>
+              )}
+              {data.tel_fijo && (
+                <div className="qr-info-item">
+                  <div className="qr-ikey">Teléfono fijo</div>
+                  <div className="qr-ival"><a href={`tel:${data.tel_fijo}`} style={{color:'#00c8ff',textDecoration:'none'}}>{data.tel_fijo}</a></div>
+                </div>
+              )}
+              {data.email && (
+                <div className="qr-info-item">
+                  <div className="qr-ikey">Email</div>
+                  <div className="qr-ival"><a href={`mailto:${data.email}`} style={{color:'#00c8ff',textDecoration:'none'}}>{data.email}</a></div>
+                </div>
+              )}
+              {data.web && (
+                <div className="qr-info-item">
+                  <div className="qr-ikey">Web</div>
+                  <div className="qr-ival"><a href={data.web} target="_blank" rel="noreferrer" style={{color:'#00c8ff',textDecoration:'none'}}>{data.web.replace('https://','').replace('http://','')}</a></div>
+                </div>
+              )}
+            </div>
+
+            {(data.linkedin || data.instagram || data.facebook || data.twitter || data.tiktok || data.youtube) && (
+              <>
+                <div className="qr-divider" />
+                <div className="qr-section-title">Redes sociales</div>
+                <div style={{display:'flex',flexWrap:'wrap',gap:'10px',marginTop:'12px'}}>
+                  {data.linkedin && (
+                    <a href={data.linkedin} target="_blank" rel="noreferrer" style={{background:'rgba(0,119,181,.15)',color:'#0077b5',padding:'10px 16px',borderRadius:'10px',fontSize:'13px',fontWeight:600,textDecoration:'none'}}>LinkedIn</a>
+                  )}
+                  {data.instagram && (
+                    <a href={`https://instagram.com/${data.instagram.replace('@','')}`} target="_blank" rel="noreferrer" style={{background:'rgba(225,48,108,.15)',color:'#e1306c',padding:'10px 16px',borderRadius:'10px',fontSize:'13px',fontWeight:600,textDecoration:'none'}}>Instagram</a>
+                  )}
+                  {data.facebook && (
+                    <a href={data.facebook} target="_blank" rel="noreferrer" style={{background:'rgba(24,119,242,.15)',color:'#1877f2',padding:'10px 16px',borderRadius:'10px',fontSize:'13px',fontWeight:600,textDecoration:'none'}}>Facebook</a>
+                  )}
+                  {data.twitter && (
+                    <a href={`https://x.com/${data.twitter.replace('@','')}`} target="_blank" rel="noreferrer" style={{background:'rgba(255,255,255,.1)',color:'#f0f8ff',padding:'10px 16px',borderRadius:'10px',fontSize:'13px',fontWeight:600,textDecoration:'none'}}>X / Twitter</a>
+                  )}
+                  {data.tiktok && (
+                    <a href={`https://tiktok.com/@${data.tiktok.replace('@','')}`} target="_blank" rel="noreferrer" style={{background:'rgba(255,0,80,.15)',color:'#ff0050',padding:'10px 16px',borderRadius:'10px',fontSize:'13px',fontWeight:600,textDecoration:'none'}}>TikTok</a>
+                  )}
+                  {data.youtube && (
+                    <a href={data.youtube} target="_blank" rel="noreferrer" style={{background:'rgba(255,0,0,.15)',color:'#ff0000',padding:'10px 16px',borderRadius:'10px',fontSize:'13px',fontWeight:600,textDecoration:'none'}}>YouTube</a>
+                  )}
+                </div>
+              </>
+            )}
+
+            {data.contacto_nombre && (
+              <>
+                <div className="qr-divider" />
+                <div className="qr-section-title">Persona de contacto</div>
+                <div className="qr-resp-block">
+                  <div className="qr-avatar">{(data.contacto_nombre || 'E').charAt(0).toUpperCase()}</div>
+                  <div>
+                    <div className="qr-resp-name">{data.contacto_nombre}</div>
+                    {data.contacto_cargo && <div className="qr-resp-role">{data.contacto_cargo}</div>}
+                    {data.contacto_movil && (
+                      <div className="qr-resp-tel">
+                        <a href={`tel:${data.contacto_movil}`} style={{color:'#00c8ff',textDecoration:'none'}}>{data.contacto_movil}</a>
+                      </div>
+                    )}
+                    {data.contacto_email && (
+                      <div className="qr-resp-tel">
+                        <a href={`mailto:${data.contacto_email}`} style={{color:'#00c8ff',textDecoration:'none'}}>{data.contacto_email}</a>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </>
+            )}
+
+            {data.observaciones && (
+              <>
+                <div className="qr-divider" />
+                <div className="qr-section-title">Información adicional</div>
+                <p style={{color:'#9C8672',fontSize:'14px',lineHeight:'1.6'}}>{data.observaciones}</p>
+              </>
+            )}
+          </div>
+        </div>
+
+        <div className="qr-footer">
+          <span>Tarjeta digital verificada</span>
+          <span className="qr-footer-logo" style={{display:"flex",alignItems:"center",gap:"8px"}}><img src="/logo.png" alt="QRnet.io" style={{width:22,height:22}} />QRnet.io</span>
+          <a href="https://qrnet.io" target="_blank" rel="noreferrer">qrnet.io</a>
+        </div>
+      </div>
+    );
+  }
   if (qr.object_type === 'personal') {
     const v = data.visible || {};
 

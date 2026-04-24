@@ -49,6 +49,7 @@ export default function VehiculoPage() {
     contacto_emergencia: '',
     tel_emergencia: '',
     observaciones: '',
+    notificacion: 'email',
   });
 
   const set = (k: string, v: string) => {
