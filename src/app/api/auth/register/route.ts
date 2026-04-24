@@ -55,7 +55,7 @@ export async function POST(req: Request) {
           <p style="color:#444;font-size:15px;line-height:1.6">
             Gracias por registrarte en QRnet.io. Para activar tu cuenta haz click en el botón de abajo.
           </p>
-          <a href="${process.env.NEXT_PUBLIC_URL}/api/auth/verify?token=${token}"
+          <a href="${(process.env.NEXT_PUBLIC_URL || process.env.NEXTAUTH_URL || "https://qrnet.io")}/api/auth/verify?token=${token}"
              style="display:inline-block;background:#00c8ff;color:#000;padding:14px 32px;border-radius:40px;font-weight:700;text-decoration:none;margin:24px 0">
             Verificar mi cuenta
           </a>
