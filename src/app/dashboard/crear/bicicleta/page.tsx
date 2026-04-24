@@ -267,6 +267,32 @@ export default function BicicletaPage() {
         </div>
 
         <div className="form-section">
+
+        <div className="form-section">
+          <div className="form-section-title">Preferencia de notificación</div>
+          <p style={{ color: '#6a8a95', fontSize: '12px', marginBottom: '16px' }}>
+            ¿Cómo quieres recibir los avisos cuando alguien escanee tu QR?
+          </p>
+          <div style={{ display: 'flex', gap: '10px' }}>
+            {[
+              { val: 'email', emoji: '✉️', label: 'Email' },
+              { val: 'whatsapp', emoji: '💬', label: 'WhatsApp' },
+              { val: 'ambos', emoji: '📲', label: 'Ambos' },
+            ].map(n => (
+              <button key={n.val} type="button" onClick={() => set('notificacion', n.val)}
+                style={{
+                  flex: 1, padding: '14px', borderRadius: '12px',
+                  border: form.notificacion === n.val ? '1px solid rgba(0,200,255,.4)' : '1px solid var(--border)',
+                  background: form.notificacion === n.val ? 'rgba(0,200,255,.1)' : 'transparent',
+                  color: form.notificacion === n.val ? 'var(--cyan)' : 'var(--muted)',
+                  cursor: 'pointer', fontSize: '13px', fontWeight: 600, textAlign: 'center',
+                }}>
+                <span style={{ fontSize: '20px', display: 'block', marginBottom: '4px' }}>{n.emoji}</span>
+                {n.label}
+              </button>
+            ))}
+          </div>
+        </div>
           <div className="form-section-title">Observaciones (opcional)</div>
           <textarea rows={3} placeholder="Notas adicionales: ubicación habitual, candado, accesorios..."
             value={form.observaciones}
