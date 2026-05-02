@@ -198,7 +198,7 @@ export default function AdminPage() {
                   {qrs.map((q: any) => (
                     <tr key={q.id} style={{ borderBottom: '1px solid rgba(255,255,255,.03)' }}>
                       <td style={{ padding: '10px 8px' }}>
-                        <a href={`/q/${q.public_code}`} target="_blank" style={{ color: '#00c8ff', textDecoration: 'none', fontWeight: 600 }}>{q.public_code}</a>
+                        <a href={`/q/${q.public_code}`} target="_blank" style={{ color: '#00c8ff', textDecoration: 'none', fontWeight: 600 }}>{q.public_code}</a> <button onClick={() => {const url=`https://api.qrserver.com/v1/create-qr-code/?size=400x400&data=https://qrnet.io/q/${q.public_code}`;const a=document.createElement("a");a.href=url;a.download=`QR-${q.public_code}.png`;a.click()}} style={{background:"rgba(0,200,255,.15)",color:"#00c8ff",border:"none",padding:"4px 10px",borderRadius:"6px",fontSize:"11px",fontWeight:700,cursor:"pointer",marginLeft:"8px"}}>⬇ QR</button>
                       </td>
                       <td style={{ padding: '10px 8px', color: '#f0f8ff' }}>{q.title || '-'}</td>
                       <td style={{ padding: '10px 8px', textAlign: 'center' }}>
