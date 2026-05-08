@@ -50,6 +50,7 @@ export default async function QRDetailPage({ params }: { params: Promise<{ id: s
           <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap' }}>
             <DownloadButton url={qrImageUrl} filename={downloadName} />
             <a href={publicUrl} target="_blank" rel="noreferrer" style={{ border: '1px solid rgba(0,200,255,.3)', color: '#00c8ff', padding: '12px 28px', borderRadius: '40px', fontWeight: 600, fontSize: '14px', textDecoration: 'none', background: 'rgba(0,200,255,.05)' }}>👁 Ver página pública</a>
+            <a href={`/dashboard/editor/${qr.id}`} style={{ background: "rgba(0,200,255,.15)", color: "#00c8ff", padding: "12px 28px", borderRadius: "40px", fontWeight: 600, fontSize: "14px", textDecoration: "none", border: "1px solid rgba(0,200,255,.3)" }}>🎨 Personalizar QR</a>
             {qr.object_type === 'cola' && (
               <a href={`/dashboard/cola/${qr.id}`} style={{ background: '#00c8ff', color: '#000', padding: '12px 28px', borderRadius: '40px', fontWeight: 600, fontSize: '14px', textDecoration: 'none' }}>📋 Gestionar cola</a>
             )}
