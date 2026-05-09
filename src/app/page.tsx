@@ -126,7 +126,7 @@ export default function HomePage() {
           </h1>
           <p className="hero-sub">
             QRnet.io vincula cualquier objeto físico al mundo digital mediante un código QR único.
-            Gestión de incidencias, identificación de propietario, antirrobo, trazabilidad y mucho más.
+            Tarjetas de visita digitales, gestión de incidencias, identificación de vehículos, trazabilidad y mucho más.
           </p>
           <div className="hero-actions">
             <Link href="/registro" className="btn-primary">Crear mi primer QR gratis</Link>
@@ -134,8 +134,8 @@ export default function HomePage() {
           </div>
           <div className="hero-stats">
             <div className="stat-item">
-              <div className="stat-num">∞</div>
-              <div className="stat-label">Tipos de objetos</div>
+              <div className="stat-num">10</div>
+              <div className="stat-label">Tipos de QR activos</div>
             </div>
             <div className="stat-item">
               <div className="stat-num">0€</div>
@@ -185,16 +185,16 @@ export default function HomePage() {
           <div className="reveal">
             <div className="section-label">Casos de uso</div>
             <h2 className="section-title">Un QR.<br />Infinitas aplicaciones.</h2>
-            <p className="section-sub">Desde máquinas expendedoras hasta bicicletas, mascotas o material industrial. Si tiene forma física, tiene identidad digital.</p>
+            <p className="section-sub">10 tipos de QR activos y funcionando. Desde máquinas expendedoras hasta tarjetas de visita digitales, colas de espera o verificación de identidad.</p>
           </div>
           <div className="cases-grid reveal">
 
             <div className="case-card featured">
               <div className="case-badge">Activo</div>
               <span className="case-emoji">🚬</span>
-              <div className="case-tag">Tabaco &amp; Vending</div>
-              <h3>Máquinas Expendedoras</h3>
-              <p>Gestión completa de incidencias para máquinas de tabaco y vending. El usuario reporta el problema en segundos sin guardar ningún contacto.</p>
+              <div className="case-tag">Tabaco</div>
+              <h3>Máquina de Tabaco</h3>
+              <p>Gestión completa de incidencias para máquinas de tabaco. El usuario reporta el problema en segundos sin guardar ningún contacto.</p>
               <ul className="case-features">
                 <li>WhatsApp pre-rellenado con datos de la máquina</li>
                 <li>Control de Tasa PVR y caducidades</li>
@@ -203,36 +203,81 @@ export default function HomePage() {
               </ul>
             </div>
 
-            <div className="case-card">
+            <div className="case-card featured">
+              <div className="case-badge">Activo</div>
+              <span className="case-emoji">🥤</span>
+              <div className="case-tag">Vending</div>
+              <h3>Máquina Vending</h3>
+              <p>Café, bebidas, snacks, bocadillos, vapers y más. Gestión de incidencias por WhatsApp adaptada a cada tipo de máquina.</p>
+              <ul className="case-features">
+                <li>WhatsApp con datos de la máquina</li>
+                <li>Múltiples tipos de máquinas</li>
+                <li>Organización por zonas</li>
+                <li>Cambio de responsable sin cambiar el QR</li>
+              </ul>
+            </div>
+
+            <div className="case-card featured">
+              <div className="case-badge">Activo</div>
+              <span className="case-emoji">🚗</span>
+              <div className="case-tag">Identificación</div>
+              <h3>Vehículo</h3>
+              <p>Registra tu vehículo con un QR y permite que cualquiera pueda contactarte de forma anónima si ocurre algo: golpe en el parking, luces encendidas o una emergencia.</p>
+              <ul className="case-features">
+                <li>Formulario de contacto anónimo al propietario</li>
+                <li>Notificaciones SMS al instante</li>
+                <li>Datos del vehículo: matrícula, marca, modelo y color</li>
+                <li>Sin exponer datos personales al público</li>
+              </ul>
+            </div>
+
+            <div className="case-card featured">
+              <div className="case-badge">Activo</div>
               <span className="case-emoji">🚲</span>
               <div className="case-tag">Antirrobo</div>
-              <h3>Vehículos &amp; Bicicletas</h3>
-              <p>Identificación de propietario, cambio de titularidad con doble confirmación y red comunitaria de alertas en caso de robo.</p>
+              <h3>Bicicleta / Patinete</h3>
+              <p>Bicicletas, e-bikes y patinetes eléctricos. Contacto anónimo, alerta de robo y verificación de segunda mano.</p>
               <ul className="case-features">
-                <li>Placa QR metálica remachable</li>
-                <li>Cambio de propiedad verificado</li>
-                <li>Alerta de robo a usuarios cercanos</li>
+                <li>Contacto anónimo con el propietario</li>
+                <li>Alerta de robo activable</li>
                 <li>Verificación antes de compra de segunda mano</li>
+                <li>Placa QR metálica remachable</li>
               </ul>
             </div>
 
-            <div className="case-card">
-              <span className="case-emoji">🏭</span>
-              <div className="case-tag">Industrial</div>
-              <h3>Equipos &amp; Maquinaria</h3>
-              <p>Trazabilidad completa de equipos industriales, registro de mantenimientos, manuales técnicos y contacto de soporte inmediato.</p>
+            <div className="case-card featured">
+              <div className="case-badge">Activo</div>
+              <span className="case-emoji">🏢</span>
+              <div className="case-tag">Profesional</div>
+              <h3>Empresa / Autónomo</h3>
+              <p>Tarjeta de visita digital con todos tus datos de contacto, web y redes sociales. Siempre actualizada, sin imprimir nada.</p>
               <ul className="case-features">
-                <li>Historial de mantenimiento</li>
-                <li>Manuales y documentación adjunta</li>
-                <li>Contacto de soporte técnico directo</li>
-                <li>Control de garantías y revisiones</li>
+                <li>Actualiza teléfono, email o dirección al instante</li>
+                <li>Tú decides qué campos son visibles</li>
+                <li>Para furgonetas, mostradores, ferias y firmas de email</li>
+                <li>Web y redes sociales integradas</li>
               </ul>
             </div>
 
-            <div className="case-card">
+            <div className="case-card featured">
+              <div className="case-badge">Activo</div>
+              <span className="case-emoji">👤</span>
+              <div className="case-tag">Privacidad</div>
+              <h3>QR Personal</h3>
+              <p>Tu perfil privado con control total. Comparte solo lo que quieras con quien quieras. Mensajería anónima incluida.</p>
+              <ul className="case-features">
+                <li>Control total de privacidad</li>
+                <li>Mensajería anónima incluida</li>
+                <li>Comparte solo los campos que elijas</li>
+                <li>Perfil actualizable en cualquier momento</li>
+              </ul>
+            </div>
+
+            <div className="case-card featured">
+              <div className="case-badge">Activo</div>
               <span className="case-emoji">🐾</span>
               <div className="case-tag">Mascotas</div>
-              <h3>Identificación de Mascotas</h3>
+              <h3>Mascota</h3>
               <p>Medalla QR para el collar de tu mascota. Si se pierde, cualquier persona puede escanear y contactar al dueño al instante.</p>
               <ul className="case-features">
                 <li>Datos del propietario accesibles de inmediato</li>
@@ -242,29 +287,45 @@ export default function HomePage() {
               </ul>
             </div>
 
-            <div className="case-card">
-              <span className="case-emoji">🏠</span>
-              <div className="case-tag">Inmobiliario</div>
-              <h3>Propiedades &amp; Alquileres</h3>
-              <p>QR en puertas y buzones para que los inquilinos contacten al administrador, reporten incidencias o accedan a información del inmueble.</p>
+            <div className="case-card featured">
+              <div className="case-badge">Activo</div>
+              <span className="case-emoji">✅</span>
+              <div className="case-tag">Seguridad</div>
+              <h3>Verificación / Autorización</h3>
+              <p>Recogida de menores en colegios, entregas certificadas, encuentros seguros y control de acceso verificado.</p>
               <ul className="case-features">
-                <li>Reporte de averías instantáneo</li>
-                <li>Acceso a normas de la comunidad</li>
-                <li>Historial de incidencias por unidad</li>
-                <li>Múltiples contactos según tipo de avería</li>
+                <li>Recogida autorizada en colegios</li>
+                <li>Entregas certificadas con verificación</li>
+                <li>Encuentros seguros entre desconocidos</li>
+                <li>Control de acceso a eventos o zonas</li>
               </ul>
             </div>
 
-            <div className="case-card">
+            <div className="case-card featured">
+              <div className="case-badge">Activo</div>
+              <span className="case-emoji">📋</span>
+              <div className="case-tag">Hostelería</div>
+              <h3>Cola / Turno</h3>
+              <p>Gestión de cola de espera para restaurantes y bares. El cliente escanea, se registra y recibe aviso cuando le toca.</p>
+              <ul className="case-features">
+                <li>El cliente escanea y se apunta a la cola</li>
+                <li>Notificación cuando le toca</li>
+                <li>Sin apps ni descargas para el cliente</li>
+                <li>Panel de gestión para el local</li>
+              </ul>
+            </div>
+
+            <div className="case-card featured">
+              <div className="case-badge">Activo</div>
               <span className="case-emoji">🎒</span>
               <div className="case-tag">Personal</div>
-              <h3>Objetos Personales</h3>
-              <p>Maletas, instrumentos musicales, cámaras fotográficas, equipos de deporte. Si lo pierdes, quien lo encuentre puede devolvértelo.</p>
+              <h3>Objeto Personal</h3>
+              <p>Maletas, instrumentos musicales, cámaras, equipos de deporte. Si lo pierdes, quien lo encuentre puede devolvértelo.</p>
               <ul className="case-features">
                 <li>Contacto anónimo del encontrador</li>
                 <li>Recompensa opcional configurable</li>
-                <li>Sin datos personales expuestos públicamente</li>
-                <li>Notificación push al propietario</li>
+                <li>Sin datos personales expuestos</li>
+                <li>Notificación al propietario</li>
               </ul>
             </div>
 

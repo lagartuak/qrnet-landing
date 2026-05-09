@@ -85,6 +85,14 @@ const tipos = [
     tags: ['Contacto anónimo', 'Recompensa', 'Privacidad'],
     activo: true,
   },
+{
+    slug: 'punto-entrega',
+    emoji: '📍',
+    titulo: 'Punto de Entrega',
+    desc: 'QR para tu buzón o portal. El repartidor ve la ubicación GPS exacta, instrucciones de acceso y puede avisarte al instante.',
+    tags: ['GPS exacto', 'Instrucciones', 'SMS al llegar'],
+    activo: true,
+  },
 ];
 export default function CrearPage() {
   const router = useRouter();
