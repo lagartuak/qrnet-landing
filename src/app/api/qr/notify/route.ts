@@ -6,7 +6,7 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 
 export async function POST(req: NextRequest) {
   try {
-    const { qr_id, motivo, mensaje, contacto } = await req.json();
+    const { qr_id, motivo, mensaje, contacto, metodoContacto = 'email' } = await req.json();
     if (!qr_id || !motivo) {
       return NextResponse.json({ error: 'Datos incompletos' }, { status: 400 });
     }
@@ -26,74 +26,112 @@ export async function POST(req: NextRequest) {
     const qr = rows[0];
     const data = typeof qr.object_data === 'string' ? JSON.parse(qr.object_data) : qr.object_data;
 
-    // Buscar email del propietario (del usuario o del objeto)
-    const ownerEmail = qr.owner_email || data.email_propietario || data.email;
+    // Verificar preferencia de notificación
+    const preferenciaNotificacion = data.notificacion || 'email';
+    
+    // Validar que el método elegido está permitido
+    const metodoPermitido = 
+      (metodoContacto === 'whatsapp' && (preferenciaNotificacion === 'whatsapp' || preferenciaNotificacion === 'ambos')) ||
+      (metodoContacto === 'email' && (preferenciaNotificacion === 'email' || preferenciaNotificacion === 'ambos'));
 
-    if (!ownerEmail) {
-      return NextResponse.json({ error: 'No se puede contactar con el propietario' }, { status: 400 });
+    if (!metodoPermitido) {
+      return NextResponse.json({ error: 'Método de contacto no permitido para este QR' }, { status: 400 });
+    }
+
+    // Buscar datos del propietario
+    const ownerEmail = qr.owner_email || data.email_propietario || data.email;
+    const ownerPhone = data.tel_propietario || data.telefono;
+
+    if (metodoContacto === 'email' && !ownerEmail) {
+      return NextResponse.json({ error: 'El propietario no ha configurado email' }, { status: 400 });
+    }
+
+    if (metodoContacto === 'whatsapp' && !ownerPhone) {
+      return NextResponse.json({ error: 'El propietario no ha configurado WhatsApp' }, { status: 400 });
     }
 
     // Determinar tipo de objeto para el email
-    const tipoEmoji = qr.object_type === 'vehiculo' ? '🚗' 
-      : qr.object_type === 'bicicleta' ? '🚲' 
+    const tipoEmoji = qr.object_type === 'vehiculo' ? '🚗'
+      : qr.object_type === 'bicicleta' ? '🚲'
       : qr.object_type === 'empresa' ? '🏢'
       : '📱';
 
-    const tipoLabel = qr.object_type === 'vehiculo' ? 'Vehículo' 
-      : qr.object_type === 'bicicleta' ? 'Bicicleta / Patinete' 
+    const tipoLabel = qr.object_type === 'vehiculo' ? 'Vehículo'
+      : qr.object_type === 'bicicleta' ? 'Bicicleta / Patinete'
       : qr.object_type === 'empresa' ? 'Empresa'
       : 'QR';
 
     const identificador = data.matricula || data.num_serie || data.nombre_comercial || qr.public_code;
     const descripcion = data.marca ? `${data.marca} ${data.modelo || ''}` : identificador;
 
-    // Enviar email
-    await resend.emails.send({
-      from: 'QRnet.io <noreply@qrnet.io>',
-      to: ownerEmail,
-      subject: `${tipoEmoji} Aviso QRnet · ${motivo}`,
-      html: `
-        <div style="font-family:sans-serif;max-width:520px;margin:0 auto;padding:40px 20px">
-          <div style="background:#f8f9fa;border-radius:16px;padding:32px;border:1px solid #e9ecef">
-            <h1 style="color:#1a1a1a;font-size:20px;margin-bottom:4px">${tipoEmoji} Aviso para tu ${tipoLabel}</h1>
-            <p style="color:#888;font-size:13px;margin-bottom:24px">
-              Alguien ha enviado un aviso sobre <strong>${descripcion}</strong> · ${qr.public_code}
-            </p>
+    // ENVIAR POR EMAIL
+    if (metodoContacto === 'email') {
+      await resend.emails.send({
+        from: 'QRnet.io <noreply@qrnet.io>',
+        to: ownerEmail,
+        subject: `${tipoEmoji} Aviso QRnet · ${motivo}`,
+        html: `
+          <div style="font-family:sans-serif;max-width:520px;margin:0 auto;padding:40px 20px">
+            <div style="background:#f8f9fa;border-radius:16px;padding:32px;border:1px solid #e9ecef">
+              <h1 style="color:#1a1a1a;font-size:20px;margin-bottom:4px">${tipoEmoji} Aviso para tu ${tipoLabel}</h1>
+              <p style="color:#888;font-size:13px;margin-bottom:24px">
+                Alguien ha enviado un aviso sobre <strong>${descripcion}</strong> · ${qr.public_code}
+              </p>
 
-            <div style="background:#fff;border-radius:12px;padding:20px;border:1px solid #e9ecef;margin-bottom:16px">
-              <div style="margin-bottom:12px">
-                <span style="color:#888;font-size:12px;text-transform:uppercase;font-weight:600">Motivo</span>
-                <p style="color:#1a1a1a;font-size:16px;font-weight:700;margin:4px 0 0">${motivo}</p>
-              </div>
-              ${mensaje ? `
-              <div style="border-top:1px solid #e9ecef;padding-top:12px">
-                <span style="color:#888;font-size:12px;text-transform:uppercase;font-weight:600">Mensaje</span>
-                <p style="color:#333;font-size:14px;line-height:1.6;margin:4px 0 0">${mensaje.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</p>
-              </div>
+              <div style="background:#fff;border-radius:12px;padding:20px;border:1px solid #e9ecef;margin-bottom:16px">
+                <div style="margin-bottom:12px">
+                  <span style="color:#888;font-size:12px;text-transform:uppercase;font-weight:600">Motivo</span>
+                  <p style="color:#1a1a1a;font-size:16px;font-weight:700;margin:4px 0 0">${motivo}</p>
+                </div>
+                ${mensaje ? `
+                <div style="border-top:1px solid #e9ecef;padding-top:12px">
+                  <span style="color:#888;font-size:12px;text-transform:uppercase;font-weight:600">Mensaje</span>
+                  <p style="color:#333;font-size:14px;line-height:1.6;margin:4px 0 0">${mensaje.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</p>
+                </div>
+                ` : ''}
+              ${contacto ? `
+                <div style="border-top:1px solid #e9ecef;padding-top:12px">
+                  <span style="color:#888;font-size:12px;text-transform:uppercase;font-weight:600">Contacto del remitente</span>
+                  <p style="color:#00c8ff;font-size:16px;font-weight:700;margin:4px 0 0">${contacto}</p>
+                </div>
               ` : ''}
-            ${contacto ? `
-              <div style="border-top:1px solid #e9ecef;padding-top:12px">
-                <span style="color:#888;font-size:12px;text-transform:uppercase;font-weight:600">Contacto del remitente</span>
-                <p style="color:#00c8ff;font-size:16px;font-weight:700;margin:4px 0 0">${contacto}</p>
               </div>
-            ` : ''}
+
+              <p style="color:#888;font-size:12px;margin-bottom:16px">
+                Este aviso fue enviado de forma anónima. No se ha compartido ningún dato del remitente.
+              </p>
+
+              <a href="${process.env.NEXTAUTH_URL || 'https://qrnet.io'}/dashboard"
+                 style="display:inline-block;background:#00c8ff;color:#000;padding:12px 24px;border-radius:40px;font-weight:700;text-decoration:none;font-size:13px">
+                Ir a mi panel
+              </a>
             </div>
-
-            <p style="color:#888;font-size:12px;margin-bottom:16px">
-              Este aviso fue enviado de forma anónima. No se ha compartido ningún dato del remitente.
+            <p style="color:#aaa;font-size:11px;text-align:center;margin-top:24px">
+              QRnet.io · Notificación automática
             </p>
-
-            <a href="${process.env.NEXTAUTH_URL || 'https://qrnet.io'}/dashboard"
-               style="display:inline-block;background:#00c8ff;color:#000;padding:12px 24px;border-radius:40px;font-weight:700;text-decoration:none;font-size:13px">
-              Ir a mi panel
-            </a>
           </div>
-          <p style="color:#aaa;font-size:11px;text-align:center;margin-top:24px">
-            QRnet.io · Notificación automática
-          </p>
-        </div>
-      `
-    });
+        `
+      });
+    }
+
+    // ENVIAR POR WHATSAPP (Twilio)
+    if (metodoContacto === 'whatsapp') {
+      try {
+        const twilio = require('twilio');
+        const client = twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
+        
+        const mensajeWhatsApp = `🚗 *Aviso QRnet*\n\n*Motivo:* ${motivo}\n${mensaje ? `*Mensaje:* ${mensaje}\n` : ''}*Contacto:* ${contacto}\n\nResponde a este mensaje si necesitas más información.`;
+        
+        await client.messages.create({
+          body: mensajeWhatsApp,
+          from: `whatsapp:${process.env.TWILIO_PHONE_NUMBER}`,
+          to: `whatsapp:${ownerPhone}`
+        });
+      } catch (whatsappError) {
+        console.error('WhatsApp error:', whatsappError);
+        // No fallar la request si WhatsApp falla, pero registrar
+      }
+    }
 
     // Registrar el escaneo
     await pool.query(

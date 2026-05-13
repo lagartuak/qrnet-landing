@@ -78,7 +78,7 @@ export default async function QRPublicPage({ params }: Props) {
               notificación al instante. <strong>Tus datos no serán compartidos.</strong>
             </p>
 
-            <ContactForm qrId={qr.id} matricula={data.matricula || ''} />
+            <ContactForm qrId={qr.id} matricula={data.matricula || ''} notificacion={data.notificacion} />
           </div>
         </div>
 
@@ -128,7 +128,7 @@ export default async function QRPublicPage({ params }: Props) {
               notificación al instante. <strong>Tus datos no serán compartidos.</strong>
             </p>
 
-           <ContactForm qrId={qr.id} matricula={data.num_serie || ''} tipo="bicicleta" />
+           <ContactForm qrId={qr.id} matricula={data.num_serie || ''} tipo="bicicleta" notificacion={data.notificacion} />
           </div>
         </div>
 
@@ -175,7 +175,7 @@ export default async function QRPublicPage({ params }: Props) {
               Selecciona el motivo y envía un aviso. El propietario recibirá una
               notificación al instante. <strong>Tus datos no serán compartidos.</strong>
             </p>
-            <ContactForm qrId={qr.id} matricula={data.num_serie || ''} />
+            <ContactForm qrId={qr.id} matricula={data.num_serie || ''} notificacion={data.notificacion} />
           </div>
         </div>
         <div className="qr-footer">
@@ -450,7 +450,7 @@ export default async function QRPublicPage({ params }: Props) {
               Envía un mensaje a <strong style={{color:'#00c8ff'}}>{data.nombre}</strong> sin revelar tus datos personales.
               Recibirá tu mensaje de forma anónima.
             </p>
-            <ContactForm qrId={qr.id} matricula="" tipo="personal" />
+            <ContactForm qrId={qr.id} matricula="" tipo="personal" notificacion={data.notificacion} />
           </div>
         </div>
 
@@ -589,7 +589,7 @@ export default async function QRPublicPage({ params }: Props) {
               notificación al instante. <strong>Tus datos no serán compartidos.</strong>
             </p>
 
-            <ContactForm qrId={qr.id} matricula={data.microchip || ''} tipo="mascota" />
+            <ContactForm qrId={qr.id} matricula={data.microchip || ''} tipo="mascota" notificacion={data.notificacion} />
           </div>
         </div>
 
@@ -704,7 +704,7 @@ export default async function QRPublicPage({ params }: Props) {
               )}
             </p>
 
-            <ContactForm qrId={qr.id} matricula={data.num_serie || ''} tipo="objeto" />
+            <ContactForm qrId={qr.id} matricula={data.num_serie || ''} tipo="objeto" notificacion={data.notificacion} />
           </div>
         </div>
 
@@ -819,7 +819,7 @@ export default async function QRPublicPage({ params }: Props) {
               )}
             </p>
 
-            <ContactForm qrId={qr.id} matricula={data.num_serie || ''} tipo="objeto" />
+            <ContactForm qrId={qr.id} matricula={data.num_serie || ''} tipo="objeto" notificacion={data.notificacion} />
           </div>
         </div>
 

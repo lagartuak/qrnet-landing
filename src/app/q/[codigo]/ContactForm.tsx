@@ -1,5 +1,4 @@
 'use client';
-
 import { useState } from 'react';
 
 const MOTIVOS_VEHICULO = [
@@ -48,23 +47,62 @@ const MOTIVOS_BICICLETA = [
   { valor: 'accidente', emoji: '🚑', label: 'Accidente del propietario' },
   { valor: 'danio', emoji: '💥', label: 'Dañado por otro vehículo' },
   { valor: 'mal_aparcado', emoji: '🅿️', label: 'Mal aparcado / Bloqueando' },
-  { valor: 'robo_intento', emoji: '🔒', label: 'Intento de robo detectado' },
-  { valor: 'candado', emoji: '🔓', label: 'Candado roto / abierto' },
   { valor: 'otro', emoji: '📋', label: 'Otro motivo' },
 ];
 
-export default function ContactForm({ qrId, matricula, tipo = 'vehiculo' }: { qrId: number; matricula: string; tipo?: string }) {
-  const MOTIVOS = tipo === 'personal' ? [] : tipo === 'invitacion' ? MOTIVOS_INVITACION : tipo === 'recogida' ? MOTIVOS_RECOGIDA : tipo === 'objeto' ? MOTIVOS_OBJETO : tipo === 'mascota' ? MOTIVOS_MASCOTA : tipo === 'bicicleta' ? MOTIVOS_BICICLETA : MOTIVOS_VEHICULO;
+const MOTIVOS_MAQUINA = [
+  { valor: 'atascado', emoji: '⚙️', label: 'Producto atascado' },
+  { valor: 'cambio', emoji: '💵', label: 'No devuelve cambio' },
+  { valor: 'luz', emoji: '💡', label: 'No funciona / Sin luz' },
+  { valor: 'danio', emoji: '💥', label: 'Dañado / Cristal roto' },
+  { valor: 'otro', emoji: '📋', label: 'Otro problema' },
+];
+
+const MOTIVOS_COLA = [
+  { valor: 'espera', emoji: '⏳', label: 'Estimado de espera' },
+  { valor: 'posicion', emoji: '📍', label: 'Consultar posición' },
+  { valor: 'cancelar', emoji: '❌', label: 'Cancelar reserva' },
+  { valor: 'cambio', emoji: '🔄', label: 'Cambiar hora' },
+  { valor: 'otro', emoji: '📋', label: 'Otro' },
+];
+
+export default function ContactForm({ qrId, matricula, tipo = 'vehiculo', notificacion = 'email' }: { qrId: number; matricula: string; tipo?: string; notificacion?: string }) {
+  const getMOTIVOS = () => {
+    switch (tipo) {
+      case 'bicicleta': return MOTIVOS_BICICLETA;
+      case 'mascota': return MOTIVOS_MASCOTA;
+      case 'objeto': return MOTIVOS_OBJETO;
+      case 'maquina': return MOTIVOS_MAQUINA;
+      case 'vending': return MOTIVOS_MAQUINA;
+      case 'cola': return MOTIVOS_COLA;
+      case 'recogida': return MOTIVOS_RECOGIDA;
+      case 'encuentro': return MOTIVOS_INVITACION;
+      case 'invitacion': return MOTIVOS_INVITACION;
+      default: return MOTIVOS_VEHICULO;
+    }
+  };
+
+  const MOTIVOS = getMOTIVOS();
+
   const [motivo, setMotivo] = useState('');
   const [mensaje, setMensaje] = useState('');
   const [contacto, setContacto] = useState('');
+  const [metodoContacto, setMetodoContacto] = useState<'whatsapp' | 'email'>('whatsapp');
   const [enviado, setEnviado] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
+  // Determinar qué métodos mostrar según preferencia
+  const puedeWhatsApp = notificacion === 'whatsapp' || notificacion === 'ambos';
+  const puedeEmail = notificacion === 'email' || notificacion === 'ambos';
+
   const handleSubmit = async () => {
     if (tipo !== "personal" && !motivo) {
       setError('Selecciona un motivo');
+      return;
+    }
+    if (!contacto.trim()) {
+      setError('Ingresa tu teléfono o email para que puedan responderte');
       return;
     }
     setLoading(true);
@@ -74,7 +112,7 @@ export default function ContactForm({ qrId, matricula, tipo = 'vehiculo' }: { qr
       const res = await fetch(tipo === 'personal' ? '/api/qr/message' : '/api/qr/notify', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ qr_id: qrId, motivo: motivoLabel, mensaje, contacto }),
+        body: JSON.stringify({ qr_id: qrId, motivo: motivoLabel, mensaje, contacto, metodoContacto }),
       });
       if (res.ok) {
         setEnviado(true);
@@ -150,8 +188,74 @@ export default function ContactForm({ qrId, matricula, tipo = 'vehiculo' }: { qr
         }}
       />
 
-      <input type="text" placeholder="Tu teléfono o email (para que puedan contactarte)" value={contacto} onChange={e => setContacto(e.target.value)} style={{width:"100%",background:"#fff",border:"1px solid #ccc",borderRadius:"12px",padding:"12px 16px",fontSize:"14px",color:"#1a1a1a",outline:"none",marginBottom:"4px",fontFamily:"sans-serif"}} />
-      <p style={{color:"#ff6b35",fontSize:"11px",marginBottom:"16px",lineHeight:"1.4"}}>⚠️ Sin datos de contacto el propietario no podrá responderte para coordinar la devolución.</p>
+      {/* Selector método de contacto */}
+      {(puedeWhatsApp || puedeEmail) && (
+        <div style={{ marginBottom: '16px' }}>
+          <div style={{ color: '#c8dde5', fontSize: '13px', fontWeight: 600, marginBottom: '10px' }}>¿Cómo prefieres que te contacte?</div>
+          <div style={{ display: 'flex', gap: '8px', marginBottom: '16px' }}>
+            {puedeWhatsApp && (
+              <button
+                type="button"
+                onClick={() => setMetodoContacto('whatsapp')}
+                style={{
+                  flex: 1,
+                  padding: '12px 16px',
+                  borderRadius: '10px',
+                  border: metodoContacto === 'whatsapp' ? '2px solid #25d366' : '1px solid rgba(255,255,255,.1)',
+                  background: metodoContacto === 'whatsapp' ? 'rgba(37,211,102,.1)' : 'rgba(255,255,255,.03)',
+                  color: metodoContacto === 'whatsapp' ? '#25d366' : '#c8dde5',
+                  cursor: 'pointer',
+                  fontSize: '13px',
+                  fontWeight: 600,
+                }}
+              >
+                💬 WhatsApp
+              </button>
+            )}
+            {puedeEmail && (
+              <button
+                type="button"
+                onClick={() => setMetodoContacto('email')}
+                style={{
+                  flex: 1,
+                  padding: '12px 16px',
+                  borderRadius: '10px',
+                  border: metodoContacto === 'email' ? '2px solid #00c8ff' : '1px solid rgba(255,255,255,.1)',
+                  background: metodoContacto === 'email' ? 'rgba(0,200,255,.1)' : 'rgba(255,255,255,.03)',
+                  color: metodoContacto === 'email' ? '#00c8ff' : '#c8dde5',
+                  cursor: 'pointer',
+                  fontSize: '13px',
+                  fontWeight: 600,
+                }}
+              >
+                ✉️ Email
+              </button>
+            )}
+          </div>
+        </div>
+      )}
+
+      <input
+        type="text"
+        placeholder={metodoContacto === 'whatsapp' ? 'Tu teléfono (con prefijo +34)' : 'Tu email'}
+        value={contacto}
+        onChange={e => setContacto(e.target.value)}
+        style={{
+          width: '100%',
+          background: '#fff',
+          border: '1px solid #ccc',
+          borderRadius: '12px',
+          padding: '12px 16px',
+          fontSize: '14px',
+          color: '#1a1a1a',
+          outline: 'none',
+          marginBottom: '4px',
+          fontFamily: 'sans-serif',
+        }}
+      />
+      <p style={{ color: '#ff6b35', fontSize: '11px', marginBottom: '16px', lineHeight: '1.4' }}>
+        ⚠️ Sin datos de contacto el propietario no podrá responderte para coordinar la devolución.
+      </p>
 
       {error && (
         <div style={{ background: 'rgba(255,80,80,.1)', border: '1px solid rgba(255,80,80,.2)', borderRadius: '10px', padding: '12px', color: '#ff6b6b', fontSize: '13px', marginBottom: '16px', textAlign: 'center' }}>
@@ -172,12 +276,11 @@ export default function ContactForm({ qrId, matricula, tipo = 'vehiculo' }: { qr
           fontSize: '15px',
           fontWeight: 700,
           cursor: loading ? 'not-allowed' : 'pointer',
-          opacity: loading ? .7 : 1,
+          opacity: loading ? 0.7 : 1,
         }}
       >
         {loading ? 'Enviando...' : tipo === 'personal' ? '💬 Enviar mensaje privado' : '📲 Enviar aviso al propietario'}
       </button>
-
       <p style={{ color: '#9C8672', fontSize: '12px', textAlign: 'center', marginTop: '12px', lineHeight: '1.5' }}>
         Tu identidad es completamente anónima.<br />
         El propietario solo recibirá el motivo y el mensaje.
