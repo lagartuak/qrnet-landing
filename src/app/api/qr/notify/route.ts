@@ -32,7 +32,8 @@ export async function POST(req: NextRequest) {
     // Validar que el método elegido está permitido
     const metodoPermitido = 
       (metodoContacto === 'whatsapp' && (preferenciaNotificacion === 'whatsapp' || preferenciaNotificacion === 'ambos')) ||
-      (metodoContacto === 'email' && (preferenciaNotificacion === 'email' || preferenciaNotificacion === 'ambos'));
+      (metodoContacto === 'email' && (preferenciaNotificacion === 'email' || preferenciaNotificacion === 'ambos')) ||
+      metodoContacto === 'anonimo';
 
     if (!metodoPermitido) {
       return NextResponse.json({ error: 'Método de contacto no permitido para este QR' }, { status: 400 });
@@ -63,6 +64,40 @@ export async function POST(req: NextRequest) {
 
     const identificador = data.matricula || data.num_serie || data.nombre_comercial || qr.public_code;
     const descripcion = data.marca ? `${data.marca} ${data.modelo || ''}` : identificador;
+
+    // SI ES ANÓNIMO: Guardar en BD (tabla qr_messages)
+    if (metodoContacto === 'anonimo') {
+      try {
+        await pool.query(
+          `INSERT INTO qr_messages (qr_id, motivo, mensaje, es_anonimo, created_at) 
+           VALUES (?, ?, ?, 1, NOW())`,
+          [qr_id, motivo, mensaje]
+        );
+      } catch (dbError: any) {
+        if (dbError.code === 'ER_NO_SUCH_TABLE') {
+          console.log('Tabla qr_messages no existe, creando...');
+          await pool.query(`
+            CREATE TABLE IF NOT EXISTS qr_messages (
+              id INT AUTO_INCREMENT PRIMARY KEY,
+              qr_id INT NOT NULL,
+              motivo VARCHAR(255),
+              mensaje TEXT,
+              contacto VARCHAR(255),
+              es_anonimo TINYINT(1) DEFAULT 0,
+              leido TINYINT(1) DEFAULT 0,
+              created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+              FOREIGN KEY (qr_id) REFERENCES qr_codes(id)
+            )
+          `);
+          await pool.query(
+            `INSERT INTO qr_messages (qr_id, motivo, mensaje, es_anonimo, created_at) 
+             VALUES (?, ?, ?, 1, NOW())`,
+            [qr_id, motivo, mensaje]
+          );
+        }
+      }
+      return NextResponse.json({ ok: true });
+    }
 
     // ENVIAR POR EMAIL
     if (metodoContacto === 'email') {
@@ -129,7 +164,6 @@ export async function POST(req: NextRequest) {
         });
       } catch (whatsappError) {
         console.error('WhatsApp error:', whatsappError);
-        // No fallar la request si WhatsApp falla, pero registrar
       }
     }
 

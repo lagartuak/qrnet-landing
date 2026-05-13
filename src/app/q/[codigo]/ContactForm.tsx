@@ -87,7 +87,7 @@ export default function ContactForm({ qrId, matricula, tipo = 'vehiculo', notifi
   const [motivo, setMotivo] = useState('');
   const [mensaje, setMensaje] = useState('');
   const [contacto, setContacto] = useState('');
-  const [metodoContacto, setMetodoContacto] = useState<'whatsapp' | 'email'>('whatsapp');
+  const [metodoContacto, setMetodoContacto] = useState<'email' | 'whatsapp' | 'anonimo'>('anonimo');
   const [enviado, setEnviado] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -101,10 +101,13 @@ export default function ContactForm({ qrId, matricula, tipo = 'vehiculo', notifi
       setError('Selecciona un motivo');
       return;
     }
-    if (!contacto.trim()) {
+    
+    // Validar contacto solo si no es anónimo
+    if (metodoContacto !== 'anonimo' && !contacto.trim()) {
       setError('Ingresa tu teléfono o email para que puedan responderte');
       return;
     }
+
     setLoading(true);
     setError('');
     try {
@@ -112,7 +115,7 @@ export default function ContactForm({ qrId, matricula, tipo = 'vehiculo', notifi
       const res = await fetch(tipo === 'personal' ? '/api/qr/message' : '/api/qr/notify', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ qr_id: qrId, motivo: motivoLabel, mensaje, contacto, metodoContacto }),
+        body: JSON.stringify({ qr_id: qrId, motivo: motivoLabel, mensaje, contacto: metodoContacto === 'anonimo' ? '' : contacto, metodoContacto }),
       });
       if (res.ok) {
         setEnviado(true);
@@ -133,7 +136,7 @@ export default function ContactForm({ qrId, matricula, tipo = 'vehiculo', notifi
         <h3 style={{ color: '#1a1a1a', fontSize: '18px', marginBottom: '8px' }}>Aviso enviado</h3>
         <p style={{ color: '#666', fontSize: '14px' }}>
           El propietario ha sido notificado al instante.<br />
-          No se han compartido tus datos personales.
+          No se ha compartido ningún dato {metodoContacto === 'anonimo' ? 'tuyo' : 'de forma no autorizada'}.
         </p>
       </div>
     );
@@ -170,7 +173,7 @@ export default function ContactForm({ qrId, matricula, tipo = 'vehiculo', notifi
 
       <textarea
         rows={3}
-        placeholder="Mensaje adicional (opcional), dónde está el objeto, etc."
+        placeholder="Mensaje (obligatorio): describe qué sucede, dónde, cuándo, etc."
         value={mensaje}
         onChange={e => setMensaje(e.target.value)}
         style={{
@@ -188,74 +191,102 @@ export default function ContactForm({ qrId, matricula, tipo = 'vehiculo', notifi
         }}
       />
 
-      {/* Selector método de contacto */}
-      {(puedeWhatsApp || puedeEmail) && (
-        <div style={{ marginBottom: '16px' }}>
-          <div style={{ color: '#c8dde5', fontSize: '13px', fontWeight: 600, marginBottom: '10px' }}>¿Cómo prefieres que te contacte?</div>
-          <div style={{ display: 'flex', gap: '8px', marginBottom: '16px' }}>
-            {puedeWhatsApp && (
-              <button
-                type="button"
-                onClick={() => setMetodoContacto('whatsapp')}
-                style={{
-                  flex: 1,
-                  padding: '12px 16px',
-                  borderRadius: '10px',
-                  border: metodoContacto === 'whatsapp' ? '2px solid #25d366' : '1px solid rgba(255,255,255,.1)',
-                  background: metodoContacto === 'whatsapp' ? 'rgba(37,211,102,.1)' : 'rgba(255,255,255,.03)',
-                  color: metodoContacto === 'whatsapp' ? '#25d366' : '#c8dde5',
-                  cursor: 'pointer',
-                  fontSize: '13px',
-                  fontWeight: 600,
-                }}
-              >
-                💬 WhatsApp
-              </button>
-            )}
-            {puedeEmail && (
-              <button
-                type="button"
-                onClick={() => setMetodoContacto('email')}
-                style={{
-                  flex: 1,
-                  padding: '12px 16px',
-                  borderRadius: '10px',
-                  border: metodoContacto === 'email' ? '2px solid #00c8ff' : '1px solid rgba(255,255,255,.1)',
-                  background: metodoContacto === 'email' ? 'rgba(0,200,255,.1)' : 'rgba(255,255,255,.03)',
-                  color: metodoContacto === 'email' ? '#00c8ff' : '#c8dde5',
-                  cursor: 'pointer',
-                  fontSize: '13px',
-                  fontWeight: 600,
-                }}
-              >
-                ✉️ Email
-              </button>
-            )}
-          </div>
+      {/* Selector de método de contacto */}
+      <div style={{ marginBottom: '16px' }}>
+        <div style={{ color: '#c8dde5', fontSize: '13px', fontWeight: 600, marginBottom: '12px' }}>¿Cómo quieres contactar?</div>
+        <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+          <button
+            type="button"
+            onClick={() => setMetodoContacto('anonimo')}
+            style={{
+              flex: '1 1 100px',
+              padding: '12px 16px',
+              borderRadius: '10px',
+              border: metodoContacto === 'anonimo' ? '2px solid #9C8672' : '1px solid rgba(255,255,255,.1)',
+              background: metodoContacto === 'anonimo' ? 'rgba(156,134,114,.15)' : 'rgba(255,255,255,.03)',
+              color: metodoContacto === 'anonimo' ? '#9C8672' : '#c8dde5',
+              cursor: 'pointer',
+              fontSize: '13px',
+              fontWeight: 600,
+            }}
+          >
+            🔒 Anónimo
+          </button>
+
+          {puedeEmail && (
+            <button
+              type="button"
+              onClick={() => setMetodoContacto('email')}
+              style={{
+                flex: '1 1 100px',
+                padding: '12px 16px',
+                borderRadius: '10px',
+                border: metodoContacto === 'email' ? '2px solid #00c8ff' : '1px solid rgba(255,255,255,.1)',
+                background: metodoContacto === 'email' ? 'rgba(0,200,255,.1)' : 'rgba(255,255,255,.03)',
+                color: metodoContacto === 'email' ? '#00c8ff' : '#c8dde5',
+                cursor: 'pointer',
+                fontSize: '13px',
+                fontWeight: 600,
+              }}
+            >
+              ✉️ Email
+            </button>
+          )}
+
+          {puedeWhatsApp && (
+            <button
+              type="button"
+              onClick={() => setMetodoContacto('whatsapp')}
+              style={{
+                flex: '1 1 100px',
+                padding: '12px 16px',
+                borderRadius: '10px',
+                border: metodoContacto === 'whatsapp' ? '2px solid #25d366' : '1px solid rgba(255,255,255,.1)',
+                background: metodoContacto === 'whatsapp' ? 'rgba(37,211,102,.1)' : 'rgba(255,255,255,.03)',
+                color: metodoContacto === 'whatsapp' ? '#25d366' : '#c8dde5',
+                cursor: 'pointer',
+                fontSize: '13px',
+                fontWeight: 600,
+              }}
+            >
+              💬 WhatsApp
+            </button>
+          )}
         </div>
+      </div>
+
+      {/* Input de contacto (solo si no es anónimo) */}
+      {metodoContacto !== 'anonimo' && (
+        <>
+          <input
+            type="text"
+            placeholder={metodoContacto === 'whatsapp' ? 'Tu teléfono (con prefijo +34)' : 'Tu email'}
+            value={contacto}
+            onChange={e => setContacto(e.target.value)}
+            style={{
+              width: '100%',
+              background: '#fff',
+              border: '1px solid #ccc',
+              borderRadius: '12px',
+              padding: '12px 16px',
+              fontSize: '14px',
+              color: '#1a1a1a',
+              outline: 'none',
+              marginBottom: '4px',
+              fontFamily: 'sans-serif',
+            }}
+          />
+          <p style={{ color: '#ff6b35', fontSize: '11px', marginBottom: '16px', lineHeight: '1.4' }}>
+            ⚠️ Sin contacto el propietario no podrá responderte.
+          </p>
+        </>
       )}
 
-      <input
-        type="text"
-        placeholder={metodoContacto === 'whatsapp' ? 'Tu teléfono (con prefijo +34)' : 'Tu email'}
-        value={contacto}
-        onChange={e => setContacto(e.target.value)}
-        style={{
-          width: '100%',
-          background: '#fff',
-          border: '1px solid #ccc',
-          borderRadius: '12px',
-          padding: '12px 16px',
-          fontSize: '14px',
-          color: '#1a1a1a',
-          outline: 'none',
-          marginBottom: '4px',
-          fontFamily: 'sans-serif',
-        }}
-      />
-      <p style={{ color: '#ff6b35', fontSize: '11px', marginBottom: '16px', lineHeight: '1.4' }}>
-        ⚠️ Sin datos de contacto el propietario no podrá responderte para coordinar la devolución.
-      </p>
+      {metodoContacto === 'anonimo' && (
+        <p style={{ color: '#9C8672', fontSize: '12px', marginBottom: '16px', lineHeight: '1.5', fontStyle: 'italic' }}>
+          🔒 Tu aviso será completamente anónimo. El propietario verá tu mensaje pero no podrá responder.
+        </p>
+      )}
 
       {error && (
         <div style={{ background: 'rgba(255,80,80,.1)', border: '1px solid rgba(255,80,80,.2)', borderRadius: '10px', padding: '12px', color: '#ff6b6b', fontSize: '13px', marginBottom: '16px', textAlign: 'center' }}>
@@ -282,8 +313,11 @@ export default function ContactForm({ qrId, matricula, tipo = 'vehiculo', notifi
         {loading ? 'Enviando...' : tipo === 'personal' ? '💬 Enviar mensaje privado' : '📲 Enviar aviso al propietario'}
       </button>
       <p style={{ color: '#9C8672', fontSize: '12px', textAlign: 'center', marginTop: '12px', lineHeight: '1.5' }}>
-        Tu identidad es completamente anónima.<br />
-        El propietario solo recibirá el motivo y el mensaje.
+        {metodoContacto === 'anonimo' ? (
+          <>Tu identidad es completamente privada.<br />El propietario solo verá tu mensaje y motivo.</>
+        ) : (
+          <>Tu datos serán usados solo para que puedan responderte.<br />No serán compartidos públicamente.</>
+        )}
       </p>
     </div>
   );
