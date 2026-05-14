@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef, useCallback } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
 
@@ -21,6 +21,7 @@ const CORNER_STYLES = [
 
 const COLORES_PRESET = [
   { color: '#000000', label: 'Negro' },
+  { color: '#ffffff', label: 'Blanco' },
   { color: '#00c8ff', label: 'Cyan QRnet' },
   { color: '#0066cc', label: 'Azul' },
   { color: '#cc0000', label: 'Rojo' },
@@ -91,18 +92,23 @@ const MARCOS = [
   { val: 'glow', label: 'Neón' },
 ];
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
 export default function EditorQR() {
   const params = useParams();
   const qrId = params.id as string;
   const qrRef = useRef<HTMLDivElement>(null);
   const qrCodeRef = useRef<any>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const saveTimerRef = useRef<any>(null);
 
   const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [saved, setSaved] = useState(false);
   const [qrData, setQrData] = useState<any>(null);
   const [publicUrl, setPublicUrl] = useState('');
   const [customLogo, setCustomLogo] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState('plantillas');
+  const [designLoaded, setDesignLoaded] = useState(false);
 
   const [config, setConfig] = useState({
     dotColor: '#000000',
@@ -117,17 +123,63 @@ export default function EditorQR() {
     marco: 'none',
   });
 
-  useEffect(() => {
-    fetch(`/api/qr/${qrId}`)
-      .then(r => r.json())
-      .then(data => {
-        setQrData(data);
-        setPublicUrl(`https://qrnet.io/q/${data.public_code}`);
-        setLoading(false);
-      })
-      .catch(() => setLoading(false));
+  // --- GUARDAR diseño (auto-save con debounce) ---
+  const guardarDiseno = useCallback(async (configToSave: typeof config) => {
+    setSaving(true);
+    setSaved(false);
+    try {
+      await fetch(`/api/qr/${qrId}/design`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ design: configToSave }),
+      });
+      setSaved(true);
+      setTimeout(() => setSaved(false), 2000);
+    } catch (e) {
+      console.error('Error guardando diseño:', e);
+    } finally {
+      setSaving(false);
+    }
   }, [qrId]);
 
+  // Auto-save cuando cambia config (después de cargar el diseño guardado)
+  useEffect(() => {
+    if (!designLoaded) return;
+    if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
+    saveTimerRef.current = setTimeout(() => {
+      guardarDiseno(config);
+    }, 1000);
+    return () => { if (saveTimerRef.current) clearTimeout(saveTimerRef.current); };
+  }, [config, designLoaded, guardarDiseno]);
+
+  // --- CARGAR datos del QR + diseño guardado ---
+  useEffect(() => {
+    const loadAll = async () => {
+      try {
+        // Cargar datos del QR
+        const qrRes = await fetch(`/api/qr/${qrId}`);
+        const qrJson = await qrRes.json();
+        setQrData(qrJson);
+        setPublicUrl(`https://qrnet.io/q/${qrJson.public_code}`);
+
+        // Cargar diseño guardado
+        const designRes = await fetch(`/api/qr/${qrId}/design`);
+        const designJson = await designRes.json();
+        if (designJson.design) {
+          setConfig(prev => ({ ...prev, ...designJson.design }));
+        }
+      } catch (e) {
+        console.error('Error cargando:', e);
+      } finally {
+        setLoading(false);
+        // Marcar como cargado con un pequeño delay para evitar auto-save inmediato
+        setTimeout(() => setDesignLoaded(true), 500);
+      }
+    };
+    loadAll();
+  }, [qrId]);
+
+  // --- Renderizar QR preview ---
   useEffect(() => {
     if (!publicUrl || typeof window === 'undefined') return;
 
@@ -195,6 +247,7 @@ export default function EditorQR() {
     }
   };
 
+  // --- DESCARGA PNG (sin cambios) ---
   const descargarPNG = async () => {
     if (!qrCodeRef.current || typeof window === 'undefined') return;
     const QRCodeStyling = (await import('qr-code-styling')).default;
@@ -236,20 +289,15 @@ export default function EditorQR() {
       ctx.fillRect(0, 0, totalW, totalH);
 
       if (config.marco === 'warning') {
-        ctx.strokeStyle = '#cc0000';
-        ctx.lineWidth = 6;
+        ctx.strokeStyle = '#cc0000'; ctx.lineWidth = 6;
         ctx.strokeRect(3, 3, totalW - 6, totalH - 6);
       } else if (config.marco === 'simple' || config.marco === 'rounded' || config.marco === 'professional') {
         ctx.strokeStyle = config.marco === 'professional' ? '#cccccc' : config.dotColor;
-        ctx.lineWidth = 4;
-        ctx.strokeRect(2, 2, totalW - 4, totalH - 4);
+        ctx.lineWidth = 4; ctx.strokeRect(2, 2, totalW - 4, totalH - 4);
       } else if (config.marco === 'glow') {
-        ctx.strokeStyle = '#00c8ff';
-        ctx.lineWidth = 3;
-        ctx.shadowColor = '#00c8ff';
-        ctx.shadowBlur = 15;
-        ctx.strokeRect(4, 4, totalW - 8, totalH - 8);
-        ctx.shadowBlur = 0;
+        ctx.strokeStyle = '#00c8ff'; ctx.lineWidth = 3;
+        ctx.shadowColor = '#00c8ff'; ctx.shadowBlur = 15;
+        ctx.strokeRect(4, 4, totalW - 8, totalH - 8); ctx.shadowBlur = 0;
       }
 
       ctx.font = `bold ${fontSize}px sans-serif`;
@@ -283,12 +331,114 @@ export default function EditorQR() {
     }
   };
 
-  const descargarSVG = () => {
-    if (qrCodeRef.current) {
-      qrCodeRef.current.download({ name: `QR-${qrData?.public_code || 'custom'}`, extension: 'svg' });
+  // --- DESCARGA SVG (CORREGIDO: incluye texto, marco y tamaño correcto) ---
+  const descargarSVG = async () => {
+    if (typeof window === 'undefined') return;
+    const QRCodeStyling = (await import('qr-code-styling')).default;
+
+    // Generar QR al tamaño real seleccionado
+    const fullOptions: any = {
+      width: config.size,
+      height: config.size,
+      data: publicUrl,
+      type: 'svg',
+      dotsOptions: { color: config.dotColor, type: config.dotStyle },
+      backgroundOptions: { color: config.bgColor === 'transparent' ? 'rgba(0,0,0,0)' : config.bgColor },
+      cornersSquareOptions: { type: config.cornerStyle, color: config.dotColor },
+      cornersDotOptions: { type: config.cornerDotStyle, color: config.dotColor },
+      imageOptions: { crossOrigin: 'anonymous', margin: 8 },
+    };
+
+    if (config.useLogo || customLogo) {
+      fullOptions.image = customLogo || '/logo.png';
+      fullOptions.imageOptions.imageSize = 0.3;
     }
+
+    const fullQR = new QRCodeStyling(fullOptions);
+
+    // Si no hay texto ni marco, descarga directa
+    if (!config.textoArriba && !config.textoAbajo && config.marco === 'none') {
+      fullQR.download({ name: `QR-${qrData?.public_code || 'custom'}`, extension: 'svg' });
+      return;
+    }
+
+    // Obtener el SVG interno del QR
+    const blob = await fullQR.getRawData('svg');
+    const svgText = await (blob as Blob).text();
+
+    // Calcular dimensiones del SVG completo
+    const pad = 60;
+    const fontSize = Math.max(28, config.size * 0.05);
+    const gap = 24;
+
+    let totalH = config.size + pad * 2;
+    if (config.textoArriba) totalH += fontSize + gap;
+    if (config.textoAbajo) totalH += fontSize + gap;
+    const totalW = config.size + pad * 2;
+
+    // Construir SVG wrapper
+    let yOff = pad;
+    let elements = '';
+
+    // Fondo
+    const bgFill = config.bgColor === 'transparent' ? 'none' : (config.marco === 'metallic' ? '#e8e8e8' : config.bgColor);
+    elements += `<rect width="${totalW}" height="${totalH}" fill="${bgFill}"/>\n`;
+
+    // Marco
+    if (config.marco === 'warning') {
+      elements += `<rect x="3" y="3" width="${totalW - 6}" height="${totalH - 6}" fill="none" stroke="#cc0000" stroke-width="6"/>\n`;
+    } else if (config.marco === 'simple' || config.marco === 'rounded' || config.marco === 'professional') {
+      const strokeColor = config.marco === 'professional' ? '#cccccc' : config.dotColor;
+      const rx = config.marco === 'rounded' ? '20' : '0';
+      elements += `<rect x="2" y="2" width="${totalW - 4}" height="${totalH - 4}" fill="none" stroke="${strokeColor}" stroke-width="4" rx="${rx}"/>\n`;
+    } else if (config.marco === 'glow') {
+      elements += `<rect x="4" y="4" width="${totalW - 8}" height="${totalH - 8}" fill="none" stroke="#00c8ff" stroke-width="3" rx="16"/>\n`;
+    }
+
+    // Texto arriba
+    if (config.textoArriba) {
+      elements += `<text x="${totalW / 2}" y="${yOff + fontSize * 0.8}" font-family="sans-serif" font-weight="bold" font-size="${fontSize}" fill="${config.dotColor}" text-anchor="middle">${escapeXml(config.textoArriba)}</text>\n`;
+      yOff += fontSize + gap;
+    }
+
+    // QR embebido
+    // Extraer contenido interno del SVG (sin la etiqueta <svg> exterior)
+    const innerSvg = svgText
+      .replace(/<\?xml[^?]*\?>\s*/g, '')
+      .replace(/<!DOCTYPE[^>]*>\s*/g, '');
+
+    elements += `<g transform="translate(${pad}, ${yOff})">\n`;
+    // Usar un foreignObject con el SVG o embeber directamente
+    // Mejor: embeber el SVG como un grupo con viewBox via nested svg
+    elements += `<svg width="${config.size}" height="${config.size}" viewBox="0 0 ${config.size} ${config.size}">\n`;
+    // Extraer solo el contenido dentro de las tags <svg>...</svg>
+    const svgContent = innerSvg.replace(/<svg[^>]*>/, '').replace(/<\/svg>\s*$/, '');
+    elements += svgContent;
+    elements += `\n</svg>\n`;
+    elements += `</g>\n`;
+    yOff += config.size + gap;
+
+    // Texto abajo
+    if (config.textoAbajo) {
+      const fontSizeBottom = fontSize * 0.85;
+      elements += `<text x="${totalW / 2}" y="${yOff + fontSizeBottom * 0.6}" font-family="sans-serif" font-weight="bold" font-size="${fontSizeBottom}" fill="${config.dotColor}" text-anchor="middle">${escapeXml(config.textoAbajo)}</text>\n`;
+    }
+
+    const finalSvg = `<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="${totalW}" height="${totalH}" viewBox="0 0 ${totalW} ${totalH}">
+${elements}
+</svg>`;
+
+    // Descargar
+    const svgBlob = new Blob([finalSvg], { type: 'image/svg+xml' });
+    const link = document.createElement('a');
+    link.download = `QR-${qrData?.public_code || 'custom'}.svg`;
+    link.href = URL.createObjectURL(svgBlob);
+    link.click();
+    URL.revokeObjectURL(link.href);
   };
 
+  // --- DESCARGA CARTEL A4 (sin cambios) ---
   const descargarCartelA4 = async () => {
     if (!qrCodeRef.current || typeof window === 'undefined') return;
     const QRCodeStyling = (await import('qr-code-styling')).default;
@@ -324,41 +474,29 @@ export default function EditorQR() {
     ctx.fillStyle = '#ffffff';
     ctx.fillRect(0, 0, a4W, a4H);
 
-    // Header
     ctx.fillStyle = config.dotColor;
     ctx.font = 'bold 120px sans-serif';
     ctx.textAlign = 'center';
-    const headerText = config.textoArriba || '¿INCIDENCIAS?';
-    ctx.fillText(headerText, a4W / 2, 300);
+    ctx.fillText(config.textoArriba || '¿INCIDENCIAS?', a4W / 2, 300);
 
-    // QR centered
     const qrX = (a4W - qrSize) / 2;
     ctx.drawImage(qrImg, qrX, 450, qrSize, qrSize);
 
-    // Footer text
     ctx.font = 'bold 90px sans-serif';
-    const footerText = config.textoAbajo || '¡ESCANEA Y CONTACTA!';
-    ctx.fillText(footerText, a4W / 2, 2050);
+    ctx.fillText(config.textoAbajo || '¡ESCANEA Y CONTACTA!', a4W / 2, 2050);
 
-    // Instructions
     ctx.fillStyle = '#666666';
     ctx.font = '50px sans-serif';
     ctx.fillText('Abre la cámara de tu móvil y apunta al código QR', a4W / 2, 2250);
 
-    // Divider
     ctx.strokeStyle = '#e0e0e0';
     ctx.lineWidth = 3;
-    ctx.beginPath();
-    ctx.moveTo(400, 2350);
-    ctx.lineTo(a4W - 400, 2350);
-    ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(400, 2350); ctx.lineTo(a4W - 400, 2350); ctx.stroke();
 
-    // QR code
     ctx.fillStyle = '#888888';
     ctx.font = '45px sans-serif';
     ctx.fillText(`Código: ${qrData?.public_code || ''}`, a4W / 2, 2480);
 
-    // Branding
     ctx.fillStyle = '#00c8ff';
     ctx.font = 'bold 70px sans-serif';
     ctx.fillText('qrnet.io', a4W / 2, 2650);
@@ -366,14 +504,11 @@ export default function EditorQR() {
     ctx.font = '40px sans-serif';
     ctx.fillText('Identidad digital para el mundo físico', a4W / 2, 2750);
 
-    // Border
     if (config.marco === 'warning') {
-      ctx.strokeStyle = '#cc0000';
-      ctx.lineWidth = 12;
+      ctx.strokeStyle = '#cc0000'; ctx.lineWidth = 12;
       ctx.strokeRect(40, 40, a4W - 80, a4H - 80);
     } else {
-      ctx.strokeStyle = '#dddddd';
-      ctx.lineWidth = 4;
+      ctx.strokeStyle = '#dddddd'; ctx.lineWidth = 4;
       ctx.strokeRect(60, 60, a4W - 120, a4H - 120);
     }
 
@@ -407,7 +542,13 @@ export default function EditorQR() {
           <img src="/logo.png" alt="QRnet.io" style={{ width: 32, height: 32 }} />
           QRnet<span style={{ color: '#00c8ff' }}>.</span>io
         </a>
-        <Link href={`/dashboard/qr/${qrId}`} style={{ color: '#00c8ff', fontSize: '14px', textDecoration: 'none' }}>← Volver al QR</Link>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+          {/* Indicador de guardado */}
+          <span style={{ fontSize: '12px', color: saving ? '#ffc800' : saved ? '#00c864' : 'transparent', transition: 'color .3s' }}>
+            {saving ? '💾 Guardando...' : saved ? '✅ Guardado' : '·'}
+          </span>
+          <Link href={`/dashboard/qr/${qrId}`} style={{ color: '#00c8ff', fontSize: '14px', textDecoration: 'none' }}>← Volver al QR</Link>
+        </div>
       </nav>
 
       <div style={{ maxWidth: '1100px', margin: '0 auto', padding: '32px 20px', display: 'flex', gap: '40px', flexWrap: 'wrap' }}>
@@ -463,7 +604,7 @@ export default function EditorQR() {
                   {COLORES_PRESET.map(c => (
                     <button key={c.color} onClick={() => set('dotColor', c.color)} title={c.label}
                       style={{ width: '36px', height: '36px', borderRadius: '8px', background: c.color,
-                        border: config.dotColor === c.color ? '3px solid #00c8ff' : '2px solid rgba(255,255,255,.15)', cursor: 'pointer' }} />
+                        border: config.dotColor === c.color ? '3px solid #00c8ff' : c.color === '#ffffff' ? '2px solid rgba(255,255,255,.4)' : '2px solid rgba(255,255,255,.15)', cursor: 'pointer' }} />
                   ))}
                   <input type="color" value={config.dotColor} onChange={e => set('dotColor', e.target.value)}
                     style={{ width: '36px', height: '36px', borderRadius: '8px', border: 'none', cursor: 'pointer' }} />
@@ -663,4 +804,9 @@ export default function EditorQR() {
       </div>
     </div>
   );
+}
+
+// Utilidad para escapar caracteres XML en textos
+function escapeXml(str: string): string {
+  return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&apos;');
 }
