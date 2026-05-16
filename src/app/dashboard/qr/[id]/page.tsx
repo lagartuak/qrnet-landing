@@ -7,6 +7,7 @@ import DownloadButton from './DownloadButton'
 import ShareAutorizados from './ShareAutorizados'
 import ShareEncuentro from './ShareEncuentro'
 import ShareInvitacion from './ShareInvitacion'
+import NotificacionEdit from './NotificacionEdit'
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 export default async function QRDetailPage({ params }: { params: Promise<{ id: string }> }) {
@@ -90,6 +91,7 @@ export default async function QRDetailPage({ params }: { params: Promise<{ id: s
             </div>
           </div>
         )}
+        <NotificacionEdit qrId={qr.id} inicial={data.notificacion || 'sms'} />
 
         <div style={{ background: '#0d1a20', borderRadius: '20px', padding: '32px', border: '1px solid rgba(0,200,255,.1)' }}>
           <div style={{ fontSize: '11px', fontWeight: 700, color: '#00c8ff', textTransform: 'uppercase', letterSpacing: '.12em', marginBottom: '20px' }}>Datos del objeto</div>

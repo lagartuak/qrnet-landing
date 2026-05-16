@@ -145,6 +145,30 @@ export default function EditarQRPage() {
               </div>
             ))}
           </div>
+          {/* Preferencia de notificación */}
+          <div style={{ marginTop: '24px' }}>
+            <label style={labelStyle}>Preferencia de notificación</label>
+            <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+              {[
+                { val: 'sms', emoji: '📱', label: 'SMS' },
+                { val: 'email', emoji: '✉️', label: 'Email' },
+                { val: 'whatsapp', emoji: '💬', label: 'WhatsApp' },
+                { val: 'ambos', emoji: '📲', label: 'Todos' },
+              ].map(o => (
+                <button key={o.val} type="button" onClick={() => set('notificacion', o.val)}
+                  style={{
+                    flex: '1 1 60px', padding: '12px 8px', borderRadius: '10px',
+                    border: (form.notificacion || 'sms') === o.val ? '2px solid #00c8ff' : '1px solid rgba(0,200,255,.1)',
+                    background: (form.notificacion || 'sms') === o.val ? 'rgba(0,200,255,.1)' : '#111e25',
+                    color: (form.notificacion || 'sms') === o.val ? '#00c8ff' : '#6a8a95',
+                    cursor: 'pointer', fontSize: '12px', fontWeight: 600, textAlign: 'center',
+                  }}>
+                  <span style={{ fontSize: '18px', display: 'block', marginBottom: '4px' }}>{o.emoji}</span>
+                  {o.label}
+                </button>
+              ))}
+            </div>
+          </div>
 
           {error && (
             <div style={{ background: 'rgba(255,80,80,.1)', border: '1px solid rgba(255,80,80,.2)', borderRadius: '10px', padding: '12px', color: '#ff6b6b', fontSize: '13px', marginTop: '20px', textAlign: 'center' }}>
