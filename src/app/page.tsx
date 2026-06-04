@@ -41,8 +41,24 @@ export default function HomePage() {
 
   // Scroll reveal
   useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => entries.forEach((e) => { if (e.isIntersecting) e.target.classList.add('visible'); }),
+   const observer = new IntersectionObserver(
+      (entries) => entries.forEach((e) => {
+        if (e.isIntersecting) {
+          const grid = e.target as HTMLElement;
+          const kids = grid.querySelectorAll(':scope > .case-card, :scope > .step, :scope > .feat, :scope > .plan');
+          kids.forEach((kid, i) => {
+            (kid as HTMLElement).style.transitionDelay = `${i * 70}ms`;
+            (kid as HTMLElement).style.opacity = '0';
+            (kid as HTMLElement).style.transform = 'translateY(30px)';
+            requestAnimationFrame(() => requestAnimationFrame(() => {
+              (kid as HTMLElement).style.transition = 'opacity .6s ease, transform .6s cubic-bezier(0.4,0,0.2,1)';
+              (kid as HTMLElement).style.opacity = '1';
+              (kid as HTMLElement).style.transform = 'translateY(0)';
+            }));
+          });
+          e.target.classList.add('visible');
+        }
+      }),
       { threshold: 0.1 }
     );
     document.querySelectorAll('.reveal').forEach((el) => observer.observe(el));
@@ -189,7 +205,7 @@ export default function HomePage() {
           </div>
           <div className="cases-grid reveal">
 
-            <div className="case-card featured qr-lift">
+            <div className="case-card featured">
               <div className="case-badge">Activo</div>
               <span className="case-emoji">🚬</span>
               <div className="case-tag">Tabaco</div>
@@ -203,7 +219,7 @@ export default function HomePage() {
               </ul>
             </div>
 
-            <div className="case-card featured qr-lift">
+            <div className="case-card featured">
               <div className="case-badge">Activo</div>
               <span className="case-emoji">🥤</span>
               <div className="case-tag">Vending</div>
@@ -217,7 +233,7 @@ export default function HomePage() {
               </ul>
             </div>
 
-            <div className="case-card featured qr-lift">
+            <div className="case-card featured">
               <div className="case-badge">Activo</div>
               <span className="case-emoji">🚗</span>
               <div className="case-tag">Identificación</div>
@@ -231,7 +247,7 @@ export default function HomePage() {
               </ul>
             </div>
 
-            <div className="case-card featured qr-lift">
+            <div className="case-card featured">
               <div className="case-badge">Activo</div>
               <span className="case-emoji">🚲</span>
               <div className="case-tag">Antirrobo</div>
@@ -245,7 +261,7 @@ export default function HomePage() {
               </ul>
             </div>
 
-            <div className="case-card featured qr-lift">
+            <div className="case-card featured">
               <div className="case-badge">Activo</div>
               <span className="case-emoji">🏢</span>
               <div className="case-tag">Profesional</div>
@@ -259,7 +275,7 @@ export default function HomePage() {
               </ul>
             </div>
 
-            <div className="case-card featured qr-lift">
+            <div className="case-card featured">
               <div className="case-badge">Activo</div>
               <span className="case-emoji">👤</span>
               <div className="case-tag">Privacidad</div>
@@ -273,7 +289,7 @@ export default function HomePage() {
               </ul>
             </div>
 
-            <div className="case-card featured qr-lift">
+            <div className="case-card featured">
               <div className="case-badge">Activo</div>
               <span className="case-emoji">🐾</span>
               <div className="case-tag">Mascotas</div>
@@ -287,7 +303,7 @@ export default function HomePage() {
               </ul>
             </div>
 
-            <div className="case-card featured qr-lift">
+            <div className="case-card featured">
               <div className="case-badge">Activo</div>
               <span className="case-emoji">✅</span>
               <div className="case-tag">Seguridad</div>
@@ -301,7 +317,7 @@ export default function HomePage() {
               </ul>
             </div>
 
-            <div className="case-card featured qr-lift">
+            <div className="case-card featured">
               <div className="case-badge">Activo</div>
               <span className="case-emoji">📋</span>
               <div className="case-tag">Hostelería</div>
@@ -315,7 +331,7 @@ export default function HomePage() {
               </ul>
             </div>
 
-            <div className="case-card featured qr-lift">
+            <div className="case-card featured">
               <div className="case-badge">Activo</div>
               <span className="case-emoji">🎒</span>
               <div className="case-tag">Personal</div>

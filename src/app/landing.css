@@ -249,7 +249,7 @@ h2.section-title{
   background:linear-gradient(135deg,rgba(0,200,255,.05),transparent);
   opacity:0;transition:.3s;
 }
-.case-card:hover{border-color:rgba(0,200,255,.3);transform:translateY(-4px)}
+.case-card:hover{border-color:rgba(0,200,255,.6);transform:translateY(-6px);box-shadow:0 0 24px rgba(0,200,255,.25),0 12px 28px rgba(0,0,0,.4)}
 .case-card:hover::before{opacity:1}
 .case-emoji{font-size:36px;margin-bottom:16px;display:block}
 .case-tag{
@@ -456,8 +456,8 @@ footer{background:var(--deep);border-top:1px solid var(--border);padding:48px 40
 }
 
 /* ── SCROLL REVEAL ──────────────────────────────────────────────────────── */
-.reveal{opacity:0;transform:translateY(30px);transition:.7s ease}
-.reveal.visible{opacity:1;transform:translateY(0)}
+.reveal{opacity:0;transform:translateY(40px) scale(.98);transition:opacity .7s ease,transform .7s cubic-bezier(0.4,0,0.2,1)}
+.reveal.visible{opacity:1;transform:translateY(0) scale(1)}
 
 /* ── RESPONSIVE ─────────────────────────────────────────────────────────── */
 @media(max-width:768px){
