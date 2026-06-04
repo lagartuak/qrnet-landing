@@ -1,0 +1,104 @@
+/* ============================================
+   QRnet — Utilidades de animación (reversible)
+   Aplicar con clases. No afecta nada por sí solo.
+   ============================================ */
+
+/* --- Variables de timing (ajustables) --- */
+:root {
+  --anim-fast: 150ms;
+  --anim-base: 250ms;
+  --anim-slow: 400ms;
+  --anim-ease: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* === 1. HOVER: elevación en tarjetas === */
+.qr-lift {
+  transition: transform var(--anim-base) var(--anim-ease),
+              box-shadow var(--anim-base) var(--anim-ease);
+  will-change: transform;
+}
+.qr-lift:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.35);
+}
+
+/* === 2. HOVER: botones con brillo === */
+.qr-btn-glow {
+  transition: transform var(--anim-fast) var(--anim-ease),
+              box-shadow var(--anim-fast) var(--anim-ease),
+              filter var(--anim-fast) var(--anim-ease);
+}
+.qr-btn-glow:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.1);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+}
+.qr-btn-glow:active {
+  transform: translateY(0);
+}
+
+/* === 3. HOVER: micro-bounce en iconos === */
+.qr-icon-bounce {
+  display: inline-block;
+  transition: transform var(--anim-base) var(--anim-ease);
+}
+.qr-icon-bounce:hover {
+  transform: scale(1.2) rotate(-5deg);
+}
+
+/* === 4. FOCUS: inputs que se iluminan === */
+.qr-input-focus {
+  transition: border-color var(--anim-base) var(--anim-ease),
+              box-shadow var(--anim-base) var(--anim-ease);
+}
+.qr-input-focus:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.25);
+}
+
+/* === 5. ENTRADA: fade-in al cargar === */
+@keyframes qrFadeIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.qr-fade-in {
+  animation: qrFadeIn var(--anim-slow) var(--anim-ease) both;
+}
+
+/* === 6. PULSO (para confirmaciones/PIN) === */
+@keyframes qrPulse {
+  0%   { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.5); }
+  70%  { box-shadow: 0 0 0 12px rgba(34, 197, 94, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }
+}
+.qr-pulse-success {
+  animation: qrPulse 1.2s var(--anim-ease);
+}
+
+/* === 7. SPINNER (estados de carga) === */
+@keyframes qrSpin {
+  to { transform: rotate(360deg); }
+}
+.qr-spinner {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: qrSpin 0.7s linear infinite;
+}
+
+/* === ACCESIBILIDAD: respetar preferencias === */
+@media (prefers-reduced-motion: reduce) {
+  .qr-lift,
+  .qr-btn-glow,
+  .qr-icon-bounce,
+  .qr-input-focus,
+  .qr-fade-in,
+  .qr-pulse-success,
+  .qr-spinner {
+    animation: none !important;
+    transition: none !important;
+  }
+}
