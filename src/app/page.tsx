@@ -91,6 +91,14 @@ export default function HomePage() {
         <div className="hero-glow2" />
         <div className="qr-deco">
           <svg width="320" height="320" viewBox="0 0 320 320" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <style>{`
+              .qr-deco rect:nth-child(7){animation:qrBlink 3s ease-in-out infinite}
+              .qr-deco rect:nth-child(10){animation:qrBlink 2.4s ease-in-out infinite .3s}
+              .qr-deco rect:nth-child(13){animation:qrBlink 2.8s ease-in-out infinite .6s}
+              .qr-deco rect:nth-child(16){animation:qrBlink 3.2s ease-in-out infinite .2s}
+              .qr-deco rect:nth-child(19){animation:qrBlink 2.6s ease-in-out infinite .5s}
+              @keyframes qrBlink{0%,100%{opacity:.3}50%{opacity:.9}}
+            `}</style>
             <rect x="40" y="40" width="90" height="90" rx="8" stroke="rgba(0,200,255,0.4)" strokeWidth="2" fill="none"/>
             <rect x="56" y="56" width="58" height="58" rx="4" fill="rgba(0,200,255,0.15)"/>
             <rect x="190" y="40" width="90" height="90" rx="8" stroke="rgba(0,200,255,0.4)" strokeWidth="2" fill="none"/>
