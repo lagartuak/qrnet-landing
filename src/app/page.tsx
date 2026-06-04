@@ -129,7 +129,7 @@ export default function HomePage() {
             Tarjetas de visita digitales, gestión de incidencias, identificación de vehículos, trazabilidad y mucho más.
           </p>
           <div className="hero-actions">
-            <Link href="/registro" className="btn-primary">Crear mi primer QR gratis</Link>
+            <Link href="/registro" className="btn-primary qr-btn-glow">Crear mi primer QR gratis</Link>
             <a href="#casos" className="btn-outline">Ver casos de uso</a>
           </div>
           <div className="hero-stats">
@@ -170,7 +170,7 @@ export default function HomePage() {
             ].map((s) => (
               <div className="step" key={s.n}>
                 <div className="step-num">{s.n}</div>
-                <div className="step-icon">{s.icon}</div>
+                <div className="step-icon qr-icon-bounce">{s.icon}</div>
                 <h3>{s.title}</h3>
                 <p>{s.text}</p>
               </div>
@@ -189,7 +189,7 @@ export default function HomePage() {
           </div>
           <div className="cases-grid reveal">
 
-            <div className="case-card featured">
+            <div className="case-card featured qr-lift">
               <div className="case-badge">Activo</div>
               <span className="case-emoji">🚬</span>
               <div className="case-tag">Tabaco</div>
@@ -203,7 +203,7 @@ export default function HomePage() {
               </ul>
             </div>
 
-            <div className="case-card featured">
+            <div className="case-card featured qr-lift">
               <div className="case-badge">Activo</div>
               <span className="case-emoji">🥤</span>
               <div className="case-tag">Vending</div>
@@ -217,7 +217,7 @@ export default function HomePage() {
               </ul>
             </div>
 
-            <div className="case-card featured">
+            <div className="case-card featured qr-lift">
               <div className="case-badge">Activo</div>
               <span className="case-emoji">🚗</span>
               <div className="case-tag">Identificación</div>
@@ -231,7 +231,7 @@ export default function HomePage() {
               </ul>
             </div>
 
-            <div className="case-card featured">
+            <div className="case-card featured qr-lift">
               <div className="case-badge">Activo</div>
               <span className="case-emoji">🚲</span>
               <div className="case-tag">Antirrobo</div>
@@ -245,7 +245,7 @@ export default function HomePage() {
               </ul>
             </div>
 
-            <div className="case-card featured">
+            <div className="case-card featured qr-lift">
               <div className="case-badge">Activo</div>
               <span className="case-emoji">🏢</span>
               <div className="case-tag">Profesional</div>
@@ -259,7 +259,7 @@ export default function HomePage() {
               </ul>
             </div>
 
-            <div className="case-card featured">
+            <div className="case-card featured qr-lift">
               <div className="case-badge">Activo</div>
               <span className="case-emoji">👤</span>
               <div className="case-tag">Privacidad</div>
@@ -273,7 +273,7 @@ export default function HomePage() {
               </ul>
             </div>
 
-            <div className="case-card featured">
+            <div className="case-card featured qr-lift">
               <div className="case-badge">Activo</div>
               <span className="case-emoji">🐾</span>
               <div className="case-tag">Mascotas</div>
@@ -287,7 +287,7 @@ export default function HomePage() {
               </ul>
             </div>
 
-            <div className="case-card featured">
+            <div className="case-card featured qr-lift">
               <div className="case-badge">Activo</div>
               <span className="case-emoji">✅</span>
               <div className="case-tag">Seguridad</div>
@@ -301,7 +301,7 @@ export default function HomePage() {
               </ul>
             </div>
 
-            <div className="case-card featured">
+            <div className="case-card featured qr-lift">
               <div className="case-badge">Activo</div>
               <span className="case-emoji">📋</span>
               <div className="case-tag">Hostelería</div>
@@ -315,7 +315,7 @@ export default function HomePage() {
               </ul>
             </div>
 
-            <div className="case-card featured">
+            <div className="case-card featured qr-lift">
               <div className="case-badge">Activo</div>
               <span className="case-emoji">🎒</span>
               <div className="case-tag">Personal</div>
