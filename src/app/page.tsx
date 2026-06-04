@@ -42,23 +42,7 @@ export default function HomePage() {
   // Scroll reveal
   useEffect(() => {
    const observer = new IntersectionObserver(
-      (entries) => entries.forEach((e) => {
-        if (e.isIntersecting) {
-          const grid = e.target as HTMLElement;
-          const kids = grid.querySelectorAll(':scope > .case-card, :scope > .step, :scope > .feat, :scope > .plan');
-          kids.forEach((kid, i) => {
-            (kid as HTMLElement).style.transitionDelay = `${i * 70}ms`;
-            (kid as HTMLElement).style.opacity = '0';
-            (kid as HTMLElement).style.transform = 'translateY(30px)';
-            requestAnimationFrame(() => requestAnimationFrame(() => {
-              (kid as HTMLElement).style.transition = 'opacity .6s ease, transform .6s cubic-bezier(0.4,0,0.2,1)';
-              (kid as HTMLElement).style.opacity = '1';
-              (kid as HTMLElement).style.transform = 'translateY(0)';
-            }));
-          });
-          e.target.classList.add('visible');
-        }
-      }),
+      (entries) => entries.forEach((e) => { if (e.isIntersecting) e.target.classList.add('visible'); }),
       { threshold: 0.1 }
     );
     document.querySelectorAll('.reveal').forEach((el) => observer.observe(el));
